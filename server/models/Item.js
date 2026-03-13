@@ -39,6 +39,11 @@ const itemSchema = new mongoose.Schema(
     imagePublicId: {
        type: String,
     },
+    gallery: [
+      {
+        type: String,
+      },
+    ],
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

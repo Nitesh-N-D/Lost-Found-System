@@ -1,45 +1,14 @@
-const Item = require("../models/Item");
-const Claim = require("../models/Claim");
+const asyncHandler = require("../utils/asyncHandler");
+const sendResponse = require("../utils/apiResponse");
+const dashboardService = require("../services/dashboardService");
+const itemService = require("../services/itemService");
 
-// @desc Get dashboard summary
-// @route GET /api/dashboard
-// @access Private
-exports.getDashboard = async (req, res) => {
-  try {
-    const totalItems = await Item.countDocuments({
-      reportedBy: req.user._id,
-    });
+exports.getDashboard = asyncHandler(async (req, res) => {
+  const dashboard = await dashboardService.getUserDashboard(req.user);
+  sendResponse(res, 200, "Dashboard fetched successfully", dashboard);
+});
 
-    const openItems = await Item.countDocuments({
-      reportedBy: req.user._id,
-      status: "open",
-    });
-
-    const claimedItems = await Item.countDocuments({
-      reportedBy: req.user._id,
-      status: "claimed",
-    });
-
-    const myClaims = await Claim.countDocuments({
-      claimant: req.user._id,
-    });
-
-    const receivedClaims = await Claim.countDocuments({
-      item: { 
-        $in: (await Item.find({ reportedBy: req.user._id })).map(
-          (item) => item._id
-        ),
-      },
-    });
-
-    res.json({
-      totalItems,
-      openItems,
-      claimedItems,
-      myClaims,
-      receivedClaims,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+exports.getMyDashboardItems = asyncHandler(async (req, res) => {
+  const items = await itemService.getMyItems(req.user._id);
+  sendResponse(res, 200, "Dashboard items fetched successfully", items);
+});

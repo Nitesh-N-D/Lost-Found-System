@@ -1,176 +1,130 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../services/api";
 import toast from "react-hot-toast";
+import { itemService } from "../services/itemService";
+import { usePageMeta } from "../hooks/usePageMeta";
+import Button from "../components/common/Button";
+
+const initialForm = {
+  title: "",
+  description: "",
+  category: "",
+  type: "lost",
+  location: "",
+  date: "",
+};
 
 function CreateItem() {
   const navigate = useNavigate();
+  const [form, setForm] = useState(initialForm);
+  const [image, setImage] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    category: "",
-    type: "lost",
-    location: "",
-    date: "",
+  usePageMeta({
+    title: "Report an item | Lost & Found",
+    description: "Create a polished lost or found item report with image upload and verification-ready details.",
   });
 
-  const [image, setImage] = useState(null);
+  const previewUrl = useMemo(() => (image ? URL.createObjectURL(image) : ""), [image]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    Object.keys(form).forEach((key) => {
-      formData.append(key, form[key]);
-    });
-
-    if (image) {
-      formData.append("image", image);
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const payload = new FormData();
+    Object.entries(form).forEach(([key, value]) => payload.append(key, value));
+    if (image) payload.append("image", image);
 
     try {
-      await API.post("/items", formData);
-      toast.success("Item created successfully!");
-      navigate("/");
+      setSubmitting(true);
+      await itemService.create(payload);
+      toast.success("Item reported successfully.");
+      navigate("/dashboard/items");
     } catch (error) {
-      toast.error("Error creating item");
+      toast.error(error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 bg-white shadow-xl rounded-2xl p-8">
-      <h2 className="text-2xl font-bold mb-6">Create Item</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Title</label>
-          <input
-            name="title"
-            placeholder="Enter item title"
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+    <div className="mx-auto max-w-4xl px-6 py-12 lg:px-10">
+      <div className="rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 shadow-2xl shadow-slate-950/20 md:p-10">
+        <div className="max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
+            Item reporting
+          </p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white">Report a lost or found item</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400">
+            Fill out clear details so claimants and admins can verify ownership faster.
+          </p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Description</label>
-          <textarea
-            name="description"
-            placeholder="Enter description"
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
+        <form className="mt-10 grid gap-6 md:grid-cols-2" onSubmit={handleSubmit}>
+          {[
+            { label: "Title", name: "title", type: "text" },
+            { label: "Category", name: "category", type: "text" },
+            { label: "Location", name: "location", type: "text" },
+            { label: "Date", name: "date", type: "date" },
+          ].map((field) => (
+            <label className="space-y-2" key={field.name}>
+              <span className="text-sm text-slate-400">{field.label}</span>
+              <input
+                className="w-full rounded-[18px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-white/30"
+                name={field.name}
+                onChange={(event) => setForm((current) => ({ ...current, [field.name]: event.target.value }))}
+                required
+                type={field.type}
+                value={form[field.name]}
+              />
+            </label>
+          ))}
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Category</label>
-          <input
-            name="category"
-            placeholder="Electronics, Keys, Wallet..."
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
+          <label className="space-y-2">
+            <span className="text-sm text-slate-400">Type</span>
+            <select
+              className="w-full rounded-[18px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-white/30"
+              name="type"
+              onChange={(event) => setForm((current) => ({ ...current, type: event.target.value }))}
+              value={form.type}
+            >
+              <option value="lost">Lost</option>
+              <option value="found">Found</option>
+            </select>
+          </label>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Type</label>
-          <select
-            name="type"
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          >
-            <option value="lost">Lost</option>
-            <option value="found">Found</option>
-          </select>
-        </div>
+          <label className="space-y-2">
+            <span className="text-sm text-slate-400">Image</span>
+            <label className="flex min-h-[170px] cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-white/15 bg-slate-950/60 p-5 text-center text-sm text-slate-500 transition hover:border-white/25 hover:bg-slate-900">
+              <span>Click to upload or drag and drop</span>
+              {previewUrl ? (
+                <img alt="Preview" className="mt-4 h-28 rounded-2xl object-cover" src={previewUrl} />
+              ) : null}
+              <input
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => setImage(event.target.files?.[0] || null)}
+                type="file"
+              />
+            </label>
+          </label>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Location</label>
-          <input
-            name="location"
-            placeholder="Enter location"
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
+          <label className="space-y-2 md:col-span-2">
+            <span className="text-sm text-slate-400">Description</span>
+            <textarea
+              className="min-h-40 w-full rounded-[22px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-white/30"
+              name="description"
+              onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+              required
+              value={form.description}
+            />
+          </label>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Date</label>
-          <input
-            type="date"
-            name="date"
-            onChange={handleChange}
-            required
-            className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
-
-      <div>
-  <label className="block text-sm font-medium mb-2">
-    Upload Image
-  </label>
-
-  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
-
-    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-      <svg
-        className="w-8 h-8 mb-3 text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M7 16V4m0 0L3 8m4-4l4 4m6 8v-4m0 0l4 4m-4-4l-4 4"
-        />
-      </svg>
-
-      <p className="text-sm text-gray-500">
-        Click to upload or drag and drop
-      </p>
-
-      {image && (
-  <img
-    src={URL.createObjectURL(image)}
-    alt="preview"
-    className="mt-3 h-16 rounded-lg object-cover"
-  />
-)}
-    </div>
-
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleImageChange}
-      className="hidden"
-    />
-  </label>
-</div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition duration-300 font-semibold"
-        >
-          Create Item
-        </button>
-
-      </form>
+          <div className="md:col-span-2">
+            <Button className="w-full justify-center" disabled={submitting} type="submit">
+              {submitting ? "Publishing item..." : "Publish item"}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
