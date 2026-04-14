@@ -57,17 +57,15 @@ function Footer() {
           <div>
             <p className="font-semibold text-white">Contact</p>
             <div className="mt-4 space-y-3">
-              <p>Add your public support email before deployment</p>
-              <p>Frontend deployment: Vercel</p>
-              <p>Backend deployment: Render</p>
-              <p>Database: MongoDB Atlas</p>
+              <p>Email: niteshdwaraka@gmail.com</p>
+             
             </div>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs uppercase tracking-[0.3em] text-slate-500 md:flex-row md:items-center md:justify-between">
           <p>Lost & Found System</p>
-          <p>Minimal interface • Secure workflow • Deployment ready</p>
+          <p>Minimal interface • Secure workflow </p>
         </div>
       </div>
     </footer>
