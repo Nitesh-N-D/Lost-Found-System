@@ -18,9 +18,9 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-center">
-          <div className="max-w-lg rounded-[32px] border border-white/10 bg-white/5 p-10">
-            <h1 className="text-3xl font-semibold text-white">Something broke.</h1>
-            <p className="mt-4 text-slate-300">
+          <div className="max-w-lg rounded-[32px] border border-stone-200 bg-white/5 p-10">
+            <h1 className="text-3xl font-semibold text-stone-900">Something broke.</h1>
+            <p className="mt-4 text-stone-600">
               The page hit an unexpected error. Refresh to try again.
             </p>
             {import.meta.env.DEV && this.state.error ? (

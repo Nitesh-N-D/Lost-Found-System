@@ -30,7 +30,7 @@ function ItemDetails() {
       .then((nextData) => {
         if (active) setData(nextData);
       })
-      .catch((error) => toast.error(error.message))
+      .catch((error) => { if (active) toast.error(error?.message || "We couldn’t load this item."); })
       .finally(() => {
         if (active) setLoading(false);
       });
@@ -47,7 +47,14 @@ function ItemDetails() {
   });
 
   if (loading) return <PageLoader label="Loading item details..." />;
-  if (!data?.item) return null;
+  if (!data?.item) return (
+    <div className="mx-auto max-w-2xl px-6 py-24 text-center">
+      <p className="eyebrow text-xs font-semibold uppercase">Item unavailable</p>
+      <h1 className="mt-4 text-3xl font-semibold text-stone-900">We couldn’t find that report.</h1>
+      <p className="mt-3 text-stone-600">It may have been removed or the link may be incorrect.</p>
+      <Link className="mt-7 inline-flex rounded-full bg-emerald-900 px-5 py-3 text-sm font-medium text-stone-900" to="/">Back to listings</Link>
+    </div>
+  );
 
   const { item, similarItems = [] } = data;
 
@@ -64,7 +71,7 @@ function ItemDetails() {
       toast.success("Claim submitted. Continue in your dashboard chat.");
       setClaimMessage("");
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.message || "We couldn’t submit your claim. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -74,11 +81,11 @@ function ItemDetails() {
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
       <div className="grid gap-8 xl:grid-cols-[1.15fr,0.85fr]">
         <div className="space-y-6">
-          <div className="overflow-hidden rounded-[36px] border border-white/10 bg-white/5">
+          <div className="overflow-hidden rounded-[36px] border border-stone-200 bg-white/5">
             {item.imageUrl ? (
               <img alt={item.title} className="h-[420px] w-full object-cover" src={item.imageUrl} />
             ) : (
-              <div className="flex h-[420px] items-center justify-center bg-slate-900 text-slate-500">
+              <div className="flex h-[420px] items-center justify-center bg-stone-100 text-stone-500">
                 No image uploaded
               </div>
             )}
@@ -87,12 +94,12 @@ function ItemDetails() {
             {[item.imageUrl, item.imageUrl, item.imageUrl].map((image, index) => (
               <div
                 key={`${image || "placeholder"}-${index}`}
-                className="overflow-hidden rounded-[24px] border border-white/10 bg-white/5"
+                className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/5"
               >
                 {image ? (
                   <img alt={`${item.title} preview ${index + 1}`} className="h-28 w-full object-cover" src={image} />
                 ) : (
-                  <div className="flex h-28 items-center justify-center text-sm text-slate-500">Preview</div>
+                  <div className="flex h-28 items-center justify-center text-sm text-stone-500">Preview</div>
                 )}
               </div>
             ))}
@@ -100,38 +107,38 @@ function ItemDetails() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-[36px] border border-white/10 bg-white/5 p-8">
+          <div className="rounded-[36px] border border-stone-200 bg-white/5 p-8">
             <div className="flex flex-wrap items-center gap-3">
               <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-primary)]">
                 {item.type}
               </span>
               <StatusBadge status={item.status} />
             </div>
-            <h1 className="mt-5 text-4xl font-semibold text-white">{item.title}</h1>
-            <p className="mt-4 text-base leading-8 text-slate-300">{item.description}</p>
+            <h1 className="mt-5 text-4xl font-semibold text-stone-900">{item.title}</h1>
+            <p className="mt-4 text-base leading-8 text-stone-600">{item.description}</p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[24px] bg-slate-950/60 p-4">
-                <div className="flex items-center gap-3 text-slate-300">
+              <div className="rounded-[24px] bg-stone-50 p-4">
+                <div className="flex items-center gap-3 text-stone-600">
                   <Icon path={icons.location} />
                   <span>{item.location}</span>
                 </div>
               </div>
-              <div className="rounded-[24px] bg-slate-950/60 p-4">
-                <div className="flex items-center gap-3 text-slate-300">
+              <div className="rounded-[24px] bg-stone-50 p-4">
+                <div className="flex items-center gap-3 text-stone-600">
                   <Icon path={icons.calendar} />
                   <span>{formatDate(item.date)}</span>
                 </div>
               </div>
-              <div className="rounded-[24px] bg-slate-950/60 p-4 text-slate-300">Category: {item.category}</div>
-              <div className="rounded-[24px] bg-slate-950/60 p-4 text-slate-300">Owner: {item.reportedBy?.name}</div>
+              <div className="rounded-[24px] bg-stone-50 p-4 text-stone-600">Category: {item.category}</div>
+              <div className="rounded-[24px] bg-stone-50 p-4 text-stone-600">Owner: {item.reportedBy?.name}</div>
             </div>
 
             <div className="mt-8 flex flex-col gap-3">
               {user ? (
                 <form className="space-y-4" onSubmit={submitClaim}>
                   <textarea
-                    className="min-h-32 w-full rounded-[24px] border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400/50"
+                    className="min-h-32 w-full rounded-[24px] border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-cyan-400/50"
                     onChange={(event) => setClaimMessage(event.target.value)}
                     placeholder="Tell the owner why this item is yours."
                     value={claimMessage}
@@ -156,13 +163,13 @@ function ItemDetails() {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
+          <div className="rounded-[32px] border border-stone-200 bg-white/5 p-6">
             <SectionHeading
               description="Phone access stays locked until a claim is approved."
               eyebrow="Owner info"
               title={item.reportedBy?.name || "Owner details"}
             />
-            <div className="mt-5 space-y-3 text-sm text-slate-300">
+            <div className="mt-5 space-y-3 text-sm text-stone-600">
               <div className="flex items-center gap-3">
                 <Icon path={icons.email} />
                 <span>{item.reportedBy?.email}</span>

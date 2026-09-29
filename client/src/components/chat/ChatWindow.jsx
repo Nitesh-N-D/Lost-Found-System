@@ -15,7 +15,7 @@ function ChatWindow({ messages }) {
   }, [safeMessages]);
 
   return (
-    <div className="rounded-[28px] border border-white/10 bg-slate-950/70 p-5">
+    <div className="rounded-[28px] border border-stone-200 bg-white p-5">
       <div className="max-h-[420px] space-y-4 overflow-y-auto pr-2">
         {safeMessages.map((message) => {
           const mine = message.sender?._id === user?._id;
@@ -29,11 +29,11 @@ function ChatWindow({ messages }) {
                 className={`max-w-[80%] rounded-3xl px-4 py-3 ${
                   mine
                     ? "bg-[var(--color-primary)] text-slate-950"
-                    : "bg-white/10 text-white"
+                    : "bg-white/10 text-stone-900"
                 }`}
               >
                 <p className="text-sm leading-6">{message.message}</p>
-                <p className={`mt-2 text-[11px] ${mine ? "text-slate-700" : "text-slate-400"}`}>
+                <p className={`mt-2 text-[11px] ${mine ? "text-slate-700" : "text-stone-500"}`}>
                   {formatRelativeTime(message.timestamp)}
                 </p>
               </div>

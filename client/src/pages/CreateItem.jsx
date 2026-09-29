@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { itemService } from "../services/itemService";
@@ -27,6 +27,10 @@ function CreateItem() {
 
   const previewUrl = useMemo(() => (image ? URL.createObjectURL(image) : ""), [image]);
 
+  useEffect(() => () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const payload = new FormData();
@@ -39,7 +43,7 @@ function CreateItem() {
       toast.success("Item reported successfully.");
       navigate("/dashboard/items");
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.message || "We couldn’t publish your report. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -47,13 +51,13 @@ function CreateItem() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12 lg:px-10">
-      <div className="rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 shadow-2xl shadow-slate-950/20 md:p-10">
+      <div className="surface-card rounded-[32px] border p-6 sm:p-8 md:p-10">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
+          <p className="eyebrow text-xs font-semibold uppercase">
             Item reporting
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white">Report a lost or found item</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400">
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">Report a lost or found item</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-stone-600">
             Fill out clear details so claimants and admins can verify ownership faster.
           </p>
         </div>
@@ -66,9 +70,9 @@ function CreateItem() {
             { label: "Date", name: "date", type: "date" },
           ].map((field) => (
             <label className="space-y-2" key={field.name}>
-              <span className="text-sm text-slate-400">{field.label}</span>
+              <span className="text-sm text-stone-500">{field.label}</span>
               <input
-                className="w-full rounded-[18px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-white/30"
+                className="form-control w-full rounded-[16px] border px-4 py-3 outline-none"
                 name={field.name}
                 onChange={(event) => setForm((current) => ({ ...current, [field.name]: event.target.value }))}
                 required
@@ -79,9 +83,9 @@ function CreateItem() {
           ))}
 
           <label className="space-y-2">
-            <span className="text-sm text-slate-400">Type</span>
+            <span className="text-sm text-stone-500">Type</span>
             <select
-              className="w-full rounded-[18px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-white/30"
+              className="form-control w-full rounded-[16px] border px-4 py-3 outline-none"
               name="type"
               onChange={(event) => setForm((current) => ({ ...current, type: event.target.value }))}
               value={form.type}
@@ -91,26 +95,27 @@ function CreateItem() {
             </select>
           </label>
 
-          <label className="space-y-2">
-            <span className="text-sm text-slate-400">Image</span>
-            <label className="flex min-h-[170px] cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-white/15 bg-slate-950/60 p-5 text-center text-sm text-slate-500 transition hover:border-white/25 hover:bg-slate-900">
-              <span>Click to upload or drag and drop</span>
+          <div className="space-y-2">
+            <span className="text-sm text-stone-600" id="image-upload-label">Image (optional)</span>
+            <label className="flex min-h-[170px] cursor-pointer flex-col items-center justify-center rounded-[22px] border border-dashed border-stone-300 bg-stone-50 p-5 text-center text-sm text-stone-600 transition hover:border-emerald-700 hover:bg-emerald-50">
+              <span>{image ? image.name : "Choose a photo to help identify the item"}</span>
               {previewUrl ? (
                 <img alt="Preview" className="mt-4 h-28 rounded-2xl object-cover" src={previewUrl} />
               ) : null}
               <input
+                aria-labelledby="image-upload-label"
                 accept="image/*"
-                className="hidden"
+                className="sr-only"
                 onChange={(event) => setImage(event.target.files?.[0] || null)}
                 type="file"
               />
             </label>
-          </label>
+          </div>
 
           <label className="space-y-2 md:col-span-2">
-            <span className="text-sm text-slate-400">Description</span>
+            <span className="text-sm text-stone-600">Description</span>
             <textarea
-              className="min-h-40 w-full rounded-[22px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-white/30"
+              className="form-control min-h-40 w-full rounded-[18px] border px-4 py-3 outline-none"
               name="description"
               onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
               required

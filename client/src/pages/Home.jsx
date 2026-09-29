@@ -40,19 +40,6 @@ const steps = [
   "Approve the claim and complete the handoff",
 ];
 
-const testimonials = [
-  {
-    quote:
-      "The interface feels clean, calm, and deliberate. It communicates trust right away, which is exactly what this kind of product needs.",
-    author: "Product Review",
-  },
-  {
-    quote:
-      "The dashboard and claim flow feel much closer to a real SaaS application than a typical portfolio CRUD project.",
-    author: "Technical Feedback",
-  },
-];
-
 function Home() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,81 +72,70 @@ function Home() {
 
   return (
     <div className="overflow-hidden">
-      <section className="mx-auto max-w-7xl px-6 pb-18 pt-16 lg:px-10 lg:pt-24">
+      <section className="mx-auto max-w-7xl px-5 pb-16 pt-12 sm:px-6 lg:px-10 lg:pb-24 lg:pt-20">
         <div className="grid gap-12 lg:grid-cols-[1.08fr,0.92fr] lg:items-center">
           <div>
-            <p className="inline-flex rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-300">
-              Secure recovery workspace
+            <p className="eyebrow inline-flex rounded-full border border-emerald-900/10 bg-emerald-900/[0.04] px-4 py-2 text-[11px] font-semibold uppercase">
+              A little help finding your way back
             </p>
-            <h1 className="mt-8 max-w-4xl text-5xl font-semibold leading-tight text-white md:text-6xl xl:text-7xl">
-              A cleaner way to manage lost items, claims, and verified handoffs.
+            <h1 className="hero-title mt-7 max-w-4xl text-[2.75rem] font-semibold text-stone-900 sm:text-5xl md:text-6xl xl:text-7xl">
+              Lost something? Let’s bring it <span className="text-emerald-800">back to you.</span>
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              Lost & Found brings reporting, verification, messaging, and approval into one structured workflow designed for clarity and trust.
+            <p className="mt-6 max-w-2xl text-base leading-8 text-stone-600 sm:text-lg">
+              Post a lost or found item, connect with the right person, and work through a thoughtful claim process—all in one welcoming place.
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link to="/register">
+              <Link className="w-full sm:w-auto" to="/register">
                 <Button className="w-full gap-2 sm:w-auto">
                   Get started
                   <Icon className="h-4 w-4" path={icons.arrowRight} />
                 </Button>
               </Link>
-              <Link to="/report-item">
+              <Link className="w-full sm:w-auto" to="/report-item">
                 <Button className="w-full sm:w-auto" variant="secondary">
                   Report an item
                 </Button>
               </Link>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-slate-500">
+            <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-stone-500">
               <span className="inline-flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                Secure claim approval
+              <span className="h-2 w-2 rounded-full bg-emerald-700" />
+                Claims reviewed with care
               </span>
               <span className="inline-flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-slate-400" />
+                <span className="h-2 w-2 rounded-full bg-amber-600" />
                 Contact visibility after approval
               </span>
             </div>
 
-            <div className="mt-12 grid gap-4 sm:grid-cols-3">
-              {[
-                ["1.2k+", "Recovered items"],
-                ["8.4k", "Active users"],
-                ["3.1k", "Listings created"],
-              ].map(([value, label]) => (
-                <div
-                  key={label}
-                  className="rounded-[26px] border border-white/8 bg-white/[0.03] p-5"
-                >
-                  <p className="text-4xl font-semibold text-white">{value}</p>
-                  <p className="mt-2 text-sm text-slate-400">{label}</p>
-                </div>
-              ))}
+            <div className="mt-12 flex items-center gap-4 border-t border-stone-200 pt-6 text-sm text-stone-600">
+              <span className="flex -space-x-2" aria-hidden="true"><i className="h-9 w-9 rounded-full border-2 border-white bg-emerald-200" /><i className="h-9 w-9 rounded-full border-2 border-white bg-amber-200" /><i className="h-9 w-9 rounded-full border-2 border-white bg-sky-200" /></span>
+              <span>Every report brings someone closer to a happy return.</span>
             </div>
           </div>
 
           <div className="relative">
-            <div className="absolute -right-16 top-8 h-40 w-40 rounded-full bg-white/6 blur-3xl" />
-            <div className="rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.9),rgba(2,6,23,0.96))] p-6 shadow-2xl shadow-slate-950/30 md:p-8">
-              <div className="mb-5 flex items-center justify-between rounded-[24px] border border-white/8 bg-white/[0.03] px-4 py-3">
+            <div className="hero-panel reveal relative overflow-hidden rounded-[32px] border p-5 md:p-7">
+              <div aria-hidden="true" className="pointer-events-none absolute -right-8 -top-12 h-48 w-48 rounded-full bg-emerald-200/50 blur-3xl" />
+              <div className="relative mb-5 flex items-center justify-between rounded-[20px] border border-stone-200 bg-white/80 px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-white">Operations panel</p>
-                  <p className="text-xs text-slate-500">Overview of reports, claims, and messages</p>
+                  <p className="text-sm font-semibold text-stone-900">Community board</p>
+                  <p className="text-xs text-stone-500">A thoughtful path from found to home</p>
                 </div>
-                <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] text-slate-300">
-                  Dashboard
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-medium text-emerald-800">
+                  Here to help
                 </span>
               </div>
-              <div className="rounded-[28px] border border-white/8 bg-white/[0.03] p-5">
+              <div className="soft-panel relative rounded-[22px] border p-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white">Recovery overview</p>
-                    <p className="mt-1 text-sm text-slate-400">Structured workflows for item reporting and claim review.</p>
+                    <p className="text-sm font-semibold text-stone-900">Your community board</p>
+                    <p className="mt-1 text-sm text-stone-500">Small details can help someone recognize what they’ve lost.</p>
                   </div>
-                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-slate-300">
-                    Live
+                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800">
+                    Here to help
                   </span>
                 </div>
               </div>
@@ -168,13 +144,13 @@ function Home() {
                 {features.map((feature) => (
                   <div
                     key={feature.title}
-                    className="rounded-[24px] border border-white/8 bg-white/[0.03] p-5"
+                    className="soft-panel rounded-[22px] border p-5 transition hover:-translate-y-1 hover:bg-white"
                   >
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04] text-white">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-900">
                       <Icon path={feature.icon} />
                     </div>
-                    <p className="mt-4 text-base font-semibold text-white">{feature.title}</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-400">{feature.description}</p>
+                    <p className="mt-4 text-base font-semibold text-stone-900">{feature.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-stone-600">{feature.description}</p>
                   </div>
                 ))}
               </div>
@@ -184,7 +160,7 @@ function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-14 lg:px-10">
-        <div className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6 md:p-8">
+        <div className="surface-card rounded-[30px] border p-6 md:p-8">
           <div className="grid gap-6 md:grid-cols-3">
             {[
               {
@@ -201,8 +177,8 @@ function Home() {
               },
             ].map((item) => (
               <div key={item.title}>
-                <p className="text-lg font-semibold text-white">{item.title}</p>
-                <p className="mt-3 text-sm leading-7 text-slate-400">{item.description}</p>
+                <p className="text-lg font-semibold text-stone-900">{item.title}</p>
+                <p className="mt-3 text-sm leading-7 text-stone-600">{item.description}</p>
               </div>
             ))}
           </div>
@@ -220,10 +196,10 @@ function Home() {
           {steps.map((step, index) => (
             <div
               key={step}
-              className="rounded-[28px] border border-white/8 bg-white/[0.03] p-6"
+              className="surface-card rounded-[26px] border p-6 transition hover:-translate-y-1"
             >
-              <p className="text-5xl font-semibold text-white/12">0{index + 1}</p>
-              <p className="mt-10 text-xl font-semibold text-white">{step}</p>
+              <p className="text-5xl font-semibold text-emerald-900/20">0{index + 1}</p>
+              <p className="mt-10 text-xl font-semibold text-stone-900">{step}</p>
             </div>
           ))}
         </div>
@@ -236,7 +212,7 @@ function Home() {
             title="Recent reports"
             description="A cleaner item feed with clearer status handling and a more structured presentation."
           />
-          <Link to="/dashboard/items" className="text-sm font-medium text-slate-300 hover:text-white">
+          <Link to="/dashboard/items" className="text-sm font-semibold text-emerald-900 hover:text-emerald-700">
             View all items
           </Link>
         </div>
@@ -252,32 +228,29 @@ function Home() {
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <SectionHeading
           align="center"
-          eyebrow="Feedback"
-          title="A calmer, more professional product surface"
-          description="The visual language is intentionally minimal so the workflow feels focused, modern, and trustworthy."
+          eyebrow="A thoughtful process"
+          title="A little more care at every step"
+          description="Your details stay protected while people share the information needed to make a confident match."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {testimonials.map((item) => (
-            <div
-              key={item.author}
-              className="rounded-[30px] border border-white/8 bg-white/[0.03] p-8"
-            >
-              <p className="text-lg leading-8 text-white">“{item.quote}”</p>
-              <p className="mt-6 text-sm font-medium text-slate-400">{item.author}</p>
+          {["Share only what helps someone recognize the item. Keep private details out of public descriptions.", "Use the claim conversation to check identifying details before arranging a safe handoff."].map((tip, index) => (
+            <div className="surface-card flex gap-5 rounded-[28px] border p-7" key={tip}>
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 font-semibold text-emerald-900">0{index + 1}</span>
+              <p className="text-base leading-7 text-stone-700">{tip}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-10">
-        <div className="rounded-[38px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-8 text-center md:p-12">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
+        <div className="surface-card rounded-[34px] border p-8 text-center md:p-12">
+          <p className="eyebrow text-xs font-semibold uppercase">
             Start with a cleaner workflow
           </p>
-          <h2 className="mx-auto mt-5 max-w-3xl text-4xl font-semibold text-white md:text-5xl">
+          <h2 className="mx-auto mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-stone-900 md:text-5xl">
             Bring reporting, claims, and communication into one straightforward system.
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-stone-600">
             The interface is structured to feel simple and professional while still supporting the full recovery flow end to end.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">

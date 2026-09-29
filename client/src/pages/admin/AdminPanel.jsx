@@ -39,25 +39,25 @@ function AdminPanel() {
           ["Total items", dashboard.stats.totalItems],
           ["Active claims", dashboard.stats.activeClaims],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-[28px] border border-white/10 bg-white/5 p-6">
-            <p className="text-sm text-slate-400">{label}</p>
-            <p className="mt-4 text-4xl font-semibold text-white">{value}</p>
+          <div key={label} className="rounded-[28px] border border-stone-200 bg-white/5 p-6">
+            <p className="text-sm text-stone-500">{label}</p>
+            <p className="mt-4 text-4xl font-semibold text-stone-900">{value}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
-        <section className="rounded-[32px] border border-white/10 bg-white/5 p-6">
-          <h2 className="text-2xl font-semibold text-white">Users</h2>
+        <section className="rounded-[32px] border border-stone-200 bg-white/5 p-6">
+          <h2 className="text-2xl font-semibold text-stone-900">Users</h2>
           <div className="mt-5 space-y-4">
             {dashboard.users.map((user) => (
               <div
                 key={user._id}
-                className="flex flex-col gap-3 rounded-[24px] bg-slate-950/60 p-4 md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-3 rounded-[24px] bg-stone-50 p-4 md:flex-row md:items-center md:justify-between"
               >
                 <div>
-                  <p className="font-semibold text-white">{user.name}</p>
-                  <p className="text-sm text-slate-400">{user.email}</p>
+                  <p className="font-semibold text-stone-900">{user.name}</p>
+                  <p className="text-sm text-stone-500">{user.email}</p>
                 </div>
                 <Button
                   onClick={async () => {
@@ -76,17 +76,17 @@ function AdminPanel() {
           </div>
         </section>
 
-        <section className="rounded-[32px] border border-white/10 bg-white/5 p-6">
-          <h2 className="text-2xl font-semibold text-white">Items</h2>
+        <section className="rounded-[32px] border border-stone-200 bg-white/5 p-6">
+          <h2 className="text-2xl font-semibold text-stone-900">Items</h2>
           <div className="mt-5 space-y-4">
             {dashboard.items.map((item) => (
               <div
                 key={item._id}
-                className="flex flex-col gap-3 rounded-[24px] bg-slate-950/60 p-4 md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-3 rounded-[24px] bg-stone-50 p-4 md:flex-row md:items-center md:justify-between"
               >
                 <div>
-                  <p className="font-semibold text-white">{item.title}</p>
-                  <p className="text-sm text-slate-400">
+                  <p className="font-semibold text-stone-900">{item.title}</p>
+                  <p className="text-sm text-stone-500">
                     {item.reportedBy?.name} • {item.status}
                   </p>
                 </div>

@@ -28,8 +28,8 @@ function SettingsPage() {
   };
 
   return (
-    <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
-      <h1 className="text-3xl font-semibold text-white">Profile settings</h1>
+    <div className="rounded-[32px] border border-stone-200 bg-white/5 p-6">
+      <h1 className="text-3xl font-semibold text-stone-900">Profile settings</h1>
       <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
         {[
           { name: "name", placeholder: "Name" },
@@ -37,14 +37,14 @@ function SettingsPage() {
         ].map((field) => (
           <input
             key={field.name}
-            className="w-full rounded-[20px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
+            className="w-full rounded-[20px] border border-stone-200 bg-white px-4 py-3 text-stone-900 outline-none focus:border-cyan-400/50"
             onChange={(event) => setForm((current) => ({ ...current, [field.name]: event.target.value }))}
             placeholder={field.placeholder}
             value={form[field.name]}
           />
         ))}
         <textarea
-          className="min-h-32 w-full rounded-[24px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-cyan-400/50"
+          className="min-h-32 w-full rounded-[24px] border border-stone-200 bg-white px-4 py-3 text-stone-900 outline-none focus:border-cyan-400/50"
           onChange={(event) => setForm((current) => ({ ...current, bio: event.target.value }))}
           placeholder="Short bio"
           value={form.bio}

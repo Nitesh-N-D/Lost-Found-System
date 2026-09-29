@@ -53,11 +53,11 @@ function DashboardOverview() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
+        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-stone-500">
           Dashboard
         </p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white">Your recovery workspace</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-stone-900">Your recovery workspace</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-500">
           Track activity, recent claims, and notifications through a calmer operational view.
         </p>
       </div>
@@ -69,20 +69,20 @@ function DashboardOverview() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <section className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6 md:p-7">
+        <section className="rounded-[32px] border border-stone-200 bg-white/[0.03] p-6 md:p-7">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">Recent claims</h2>
-            <Link className="text-sm text-slate-300 hover:text-white" to="/dashboard/claims">
+            <h2 className="text-xl font-semibold text-stone-900">Recent claims</h2>
+            <Link className="text-sm text-stone-600 hover:text-stone-900" to="/dashboard/claims">
               View all
             </Link>
           </div>
           <div className="mt-5 space-y-4">
             {myClaims.map((claim) => (
-              <div key={claim._id} className="rounded-[24px] border border-white/6 bg-slate-950/50 p-4">
+              <div key={claim._id} className="rounded-[24px] border border-stone-200 bg-stone-50 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-white">{claim.item?.title}</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-400">{claim.message}</p>
+                    <p className="font-semibold text-stone-900">{claim.item?.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-stone-500">{claim.message}</p>
                   </div>
                   <StatusBadge status={claim.status} />
                 </div>
@@ -91,13 +91,13 @@ function DashboardOverview() {
           </div>
         </section>
 
-        <section className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6 md:p-7">
-          <h2 className="text-xl font-semibold text-white">Notifications</h2>
+        <section className="rounded-[32px] border border-stone-200 bg-white/[0.03] p-6 md:p-7">
+          <h2 className="text-xl font-semibold text-stone-900">Notifications</h2>
           <div className="mt-5 space-y-4">
             {notifications.map((notification) => (
-              <div key={notification.id} className="rounded-[24px] border border-white/6 bg-slate-950/50 p-4">
-                <p className="font-semibold text-white">{notification.title}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-400">{notification.description}</p>
+              <div key={notification.id} className="rounded-[24px] border border-stone-200 bg-stone-50 p-4">
+                <p className="font-semibold text-stone-900">{notification.title}</p>
+                <p className="mt-2 text-sm leading-6 text-stone-500">{notification.description}</p>
               </div>
             ))}
           </div>

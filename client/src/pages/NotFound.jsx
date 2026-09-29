@@ -7,8 +7,8 @@ function NotFound() {
       <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--color-primary)]">
         404
       </p>
-      <h1 className="mt-5 text-5xl font-semibold text-white">Page not found</h1>
-      <p className="mt-4 text-slate-300">
+      <h1 className="mt-5 text-5xl font-semibold text-stone-900">Page not found</h1>
+      <p className="mt-4 text-stone-600">
         The page you’re looking for doesn’t exist or may have moved.
       </p>
       <Link className="mt-8" to="/">

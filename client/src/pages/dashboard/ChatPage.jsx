@@ -63,18 +63,18 @@ function ChatPage() {
       <ChatSidebar chatData={chatData} />
 
       <div className="space-y-6">
-        <div className="rounded-[28px] border border-white/10 bg-white/5 p-6">
+        <div className="rounded-[28px] border border-stone-200 bg-white/5 p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xl font-semibold text-white">Claim conversation</p>
-              <p className="mt-2 text-sm text-slate-300">
+              <p className="text-xl font-semibold text-stone-900">Claim conversation</p>
+              <p className="mt-2 text-sm text-stone-600">
                 Keep communication secure, timestamped, and tied to the claim record.
               </p>
             </div>
             <StatusBadge status={chatData.claimStatus} />
           </div>
 
-          <div className="mt-5 rounded-[24px] bg-slate-950/60 p-4 text-sm text-slate-300">
+          <div className="mt-5 rounded-[24px] bg-stone-50 p-4 text-sm text-stone-600">
             {chatData.contactUnlocked ? (
               <p>Call Owner: {chatData.contact?.phone || "Phone number unavailable"}</p>
             ) : (
@@ -92,10 +92,10 @@ function ChatPage() {
           />
         )}
 
-        <form className="rounded-[28px] border border-white/10 bg-white/5 p-4" onSubmit={sendMessage}>
+        <form className="rounded-[28px] border border-stone-200 bg-white/5 p-4" onSubmit={sendMessage}>
           <div className="flex flex-col gap-3 md:flex-row">
             <input
-              className="flex-1 rounded-full border border-white/10 bg-slate-950/70 px-5 py-3 text-white outline-none transition focus:border-cyan-400/50"
+              className="flex-1 rounded-full border border-stone-200 bg-white px-5 py-3 text-stone-900 outline-none transition focus:border-cyan-400/50"
               onChange={(event) => setMessage(event.target.value)}
               placeholder="Type your message..."
               value={message}

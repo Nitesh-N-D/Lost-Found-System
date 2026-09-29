@@ -39,21 +39,21 @@ function Login() {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-5xl items-center px-6 py-12 lg:px-10">
-      <div className="grid w-full gap-8 rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 md:grid-cols-2 md:p-10">
+      <div className="grid w-full gap-8 rounded-[36px] border border-stone-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-8 md:grid-cols-2 md:p-10">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-stone-500">
             Sign in
           </p>
-          <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white">Continue managing reports and recoveries.</h1>
-          <p className="mt-4 leading-7 text-slate-300">
+          <h1 className="mt-5 text-4xl font-semibold tracking-tight text-stone-900">Continue managing reports and recoveries.</h1>
+          <p className="mt-4 leading-7 text-stone-600">
             Access your dashboard, claim inbox, messaging workspace, and account settings.
           </p>
         </div>
-        <form className="space-y-5 rounded-[28px] border border-white/8 bg-slate-950/40 p-5 md:p-6" onSubmit={handleSubmit}>
+        <form className="space-y-5 rounded-[28px] border border-stone-200 bg-stone-50 p-5 md:p-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="text-sm text-slate-400">Email</label>
+            <label className="text-sm text-stone-500">Email</label>
           <input
-            className="w-full rounded-[18px] border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-white/30"
+            className="w-full rounded-[18px] border border-stone-200 bg-white px-4 py-3 text-stone-900 outline-none focus:border-white/30"
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
             placeholder="Email"
             required
@@ -62,10 +62,10 @@ function Login() {
           />
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-slate-400">Password</label>
+            <label className="text-sm text-stone-500">Password</label>
             <div className="relative">
               <input
-                className="w-full rounded-[18px] border border-white/10 bg-slate-950/70 px-4 py-3 pr-12 text-white outline-none focus:border-white/30"
+                className="w-full rounded-[18px] border border-stone-200 bg-white px-4 py-3 pr-12 text-stone-900 outline-none focus:border-white/30"
                 onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
                 placeholder="Password"
                 required
@@ -73,7 +73,7 @@ function Login() {
                 value={form.password}
               />
               <button
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 transition hover:text-stone-900"
                 onClick={() => setShowPassword((value) => !value)}
                 type="button"
               >
@@ -84,9 +84,9 @@ function Login() {
           <Button className="w-full justify-center" disabled={submitting} type="submit">
             {submitting ? "Signing in..." : "Sign in"}
           </Button>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-stone-500">
             New here?{" "}
-            <Link className="text-white underline decoration-white/20 underline-offset-4" to="/register">
+            <Link className="text-stone-900 underline decoration-white/20 underline-offset-4" to="/register">
               Create your account
             </Link>
           </p>

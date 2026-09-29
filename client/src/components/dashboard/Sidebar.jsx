@@ -6,8 +6,8 @@ import icons from "../common/iconPaths";
 
 function Sidebar() {
   return (
-    <aside className="rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.96),rgba(15,23,42,0.84))] p-4 shadow-2xl shadow-slate-950/20">
-      <p className="px-4 pb-4 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+    <aside className="surface-card rounded-[28px] border p-4">
+      <p className="eyebrow px-4 pb-4 text-xs font-semibold uppercase">
         Workspace
       </p>
       <nav className="space-y-2">
@@ -19,8 +19,8 @@ function Sidebar() {
               classNames(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition duration-300",
                 isActive
-                  ? "bg-[linear-gradient(135deg,rgba(103,232,249,0.95),rgba(250,204,21,0.92))] text-slate-950 shadow-lg shadow-cyan-500/20"
-                  : "text-slate-300 hover:bg-white/5 hover:text-white"
+                  ? "bg-emerald-900 text-white shadow-lg shadow-emerald-950/10"
+                  : "text-stone-600 hover:bg-stone-100 hover:text-emerald-950"
               )
             }
             to={link.to}

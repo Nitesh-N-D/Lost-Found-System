@@ -50,12 +50,12 @@ function ReceivedClaims() {
   return (
     <div className="space-y-4">
       {claims.map((claim) => (
-        <div key={claim._id} className="rounded-[28px] border border-white/10 bg-white/5 p-6">
+        <div key={claim._id} className="rounded-[28px] border border-stone-200 bg-white/5 p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xl font-semibold text-white">{claim.item?.title}</p>
-              <p className="mt-2 text-sm text-slate-300">Claimant: {claim.claimant?.name}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-400">{claim.message}</p>
+              <p className="text-xl font-semibold text-stone-900">{claim.item?.title}</p>
+              <p className="mt-2 text-sm text-stone-600">Claimant: {claim.claimant?.name}</p>
+              <p className="mt-2 text-sm leading-6 text-stone-500">{claim.message}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <StatusBadge status={claim.status} />
@@ -76,7 +76,7 @@ function ReceivedClaims() {
       ))}
 
       <Modal open={Boolean(selection)} onClose={() => setSelection(null)} title="Confirm claim update">
-        <p className="text-sm text-slate-300">
+        <p className="text-sm text-stone-600">
           This will mark the claim as <span className="capitalize">{selection?.status}</span>.
         </p>
         <div className="mt-6 flex justify-end gap-3">

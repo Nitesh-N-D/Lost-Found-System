@@ -9,13 +9,13 @@ function Button({
 }) {
   const variants = {
     primary:
-      "bg-white text-slate-950 shadow-sm shadow-black/10 hover:-translate-y-0.5 hover:bg-slate-100",
+      "primary-button hover:-translate-y-0.5",
     secondary:
-      "border border-white/10 bg-white/[0.04] text-white hover:border-white/20 hover:bg-white/[0.08]",
+      "secondary-button border",
     ghost:
-      "border border-slate-700 bg-slate-900 text-slate-100 hover:border-slate-500 hover:bg-slate-800",
+      "border border-stone-200 bg-stone-100 text-stone-700 hover:bg-stone-200",
     danger:
-      "bg-rose-500 text-white hover:bg-rose-600",
+      "bg-rose-500 text-stone-900 hover:bg-rose-600",
   };
 
   return (
