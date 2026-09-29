@@ -16,7 +16,7 @@ const getUserDashboard = async (user) => {
   const [receivedClaims, openItems, recoveredItems] = await Promise.all([
     Claim.find({ item: { $in: itemIds } })
       .populate("item", "title status")
-      .populate("claimant", "name email")
+      .populate("claimant", "name")
       .sort({ createdAt: -1 }),
     Item.countDocuments({ reportedBy: user._id, status: "open" }),
     Item.countDocuments({ reportedBy: user._id, status: "claimed" }),

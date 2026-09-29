@@ -30,8 +30,8 @@ A full-stack MERN application for reporting lost or found items, submitting owne
 
 Copy these example files and fill in real values:
 
-- [client/.env.example](c:/Users/Nitesh/OneDrive/Documents/lost-found-system/client/.env.example)
-- [server/.env.example](c:/Users/Nitesh/OneDrive/Documents/lost-found-system/server/.env.example)
+- [client/.env.example](client/.env.example)
+- [server/.env.example](server/.env.example)
 
 ### Frontend
 
@@ -57,7 +57,8 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 CLIENT_URL=https://lost-found-system.vercel.app
 CLIENT_URLS=http://localhost:5173
-ADMIN_EMAILS=niteshndmaster@gmail.com
+ADMIN_EMAILS=admin@example.com
+TRUST_PROXY_HOPS=1
 NODE_ENV=production
 ```
 
@@ -116,11 +117,12 @@ npm run lint
 npm run build
 ```
 
-Backend syntax check:
+Backend syntax and dependency checks:
 
 ```bash
 cd server
 node --check server.js
+npm audit --omit=dev
 ```
 
 ## Notes

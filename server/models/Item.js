@@ -6,14 +6,22 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: [true, "Title is required"],
       trim: true,
+      minlength: 3,
+      maxlength: 120,
     },
     description: {
       type: String,
       required: [true, "Description is required"],
+      trim: true,
+      minlength: 10,
+      maxlength: 1000,
     },
     category: {
       type: String,
       required: [true, "Category is required"],
+      trim: true,
+      minlength: 2,
+      maxlength: 50,
     },
     type: {
       type: String,
@@ -23,6 +31,9 @@ const itemSchema = new mongoose.Schema(
     location: {
       type: String,
       required: [true, "Location is required"],
+      trim: true,
+      minlength: 2,
+      maxlength: 120,
     },
     date: {
       type: Date,

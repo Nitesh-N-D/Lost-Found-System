@@ -1,12 +1,12 @@
 import { classNames } from "../../utils/classNames";
 
 const styles = {
-  open: "bg-emerald-500/15 text-emerald-300",
-  claimed: "bg-amber-500/15 text-amber-200",
-  closed: "bg-slate-500/20 text-slate-200",
-  pending: "bg-sky-500/15 text-sky-200",
-  approved: "bg-emerald-500/15 text-emerald-300",
-  rejected: "bg-rose-500/15 text-rose-200",
+  open: "bg-emerald-50 text-emerald-800",
+  claimed: "bg-amber-50 text-amber-800",
+  closed: "bg-stone-100 text-stone-700",
+  pending: "bg-sky-50 text-sky-800",
+  approved: "bg-emerald-50 text-emerald-800",
+  rejected: "bg-rose-50 text-rose-800",
 };
 
 function StatusBadge({ status }) {
@@ -14,7 +14,7 @@ function StatusBadge({ status }) {
     <span
       className={classNames(
         "inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize",
-        styles[status] || "bg-slate-500/20 text-slate-200"
+        styles[status] || "bg-stone-100 text-stone-700"
       )}
     >
       {status}

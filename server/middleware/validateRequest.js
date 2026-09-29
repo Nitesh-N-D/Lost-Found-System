@@ -5,7 +5,8 @@ const validateRequest = (req, _res, next) => {
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
-    return next(new AppError("Validation failed", 422, result.array()));
+    const messages = [...new Set(result.array().map((entry) => entry.msg))];
+    return next(new AppError(messages.join(". "), 422));
   }
 
   next();

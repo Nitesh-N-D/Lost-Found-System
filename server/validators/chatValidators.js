@@ -6,7 +6,7 @@ const claimIdValidator = [
 
 const sendMessageValidator = [
   param("claimId").isMongoId().withMessage("Invalid claim ID"),
-  body("message")
+  body("message").trim()
     .isLength({ min: 1, max: 500 })
     .withMessage("Message must be between 1 and 500 characters"),
 ];

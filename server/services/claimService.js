@@ -8,9 +8,9 @@ const populateClaim = (query) =>
   query
     .populate({
       path: "item",
-      populate: { path: "reportedBy", select: "name email phone bio" },
+      populate: { path: "reportedBy", select: "name" },
     })
-    .populate("claimant", "name email phone bio");
+    .populate("claimant", "name");
 
 const createClaim = async (itemId, userId, message) => {
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
@@ -42,17 +42,20 @@ const createClaim = async (itemId, userId, message) => {
     message,
   });
 
-  await Chat.create({
-    claim: claim._id,
-    item: itemId,
-    participants: [userId, item.reportedBy],
-    messages: [
-      {
-        sender: userId,
-        message,
-      },
-    ],
-  });
+  try {
+    await Chat.create({
+      claim: claim._id,
+      item: itemId,
+      participants: [userId, item.reportedBy],
+      messages: [{ sender: userId, message }],
+    });
+  } catch (error) {
+    const recoveredChat = await Chat.findOne({ claim: claim._id });
+    if (!recoveredChat) {
+      await Claim.deleteOne({ _id: claim._id });
+      throw error;
+    }
+  }
 
   return populateClaim(Claim.findById(claim._id));
 };
@@ -80,15 +83,37 @@ const updateClaimStatus = async (claimId, userId, status) => {
     throw new AppError("Claim not found", 404);
   }
 
+  if (!claim.item?.reportedBy) {
+    throw new AppError("The item for this claim is no longer available.", 404);
+  }
+
   if (claim.item.reportedBy._id.toString() !== userId.toString()) {
     throw new AppError("Not authorized to manage this claim", 403);
   }
 
-  claim.status = status;
-  await claim.save();
-
   if (status === "approved") {
-    await Item.findByIdAndUpdate(claim.item._id, { status: "claimed" });
+    const approvedClaim = await Claim.findOneAndUpdate(
+      { _id: claim._id, status: "pending" },
+      { $set: { status: "approved" } },
+      { new: true }
+    );
+    if (!approvedClaim) {
+      throw new AppError("This claim has already been reviewed.", 409);
+    }
+
+    const item = await Item.findOneAndUpdate(
+      { _id: claim.item._id, status: "open" },
+      { $set: { status: "claimed" } },
+      { new: true }
+    );
+    if (!item) {
+      await Claim.updateOne(
+        { _id: claim._id, status: "approved" },
+        { $set: { status: "pending" } }
+      );
+      throw new AppError("This item is no longer available for claims.", 409);
+    }
+
     await Claim.updateMany(
       {
         item: claim.item._id,
@@ -97,6 +122,15 @@ const updateClaimStatus = async (claimId, userId, status) => {
       },
       { status: "rejected" }
     );
+  } else {
+    const rejectedClaim = await Claim.findOneAndUpdate(
+      { _id: claim._id, status: "pending" },
+      { $set: { status: "rejected" } },
+      { new: true }
+    );
+    if (!rejectedClaim) {
+      throw new AppError("This claim has already been reviewed.", 409);
+    }
   }
 
   return populateClaim(Claim.findById(claim._id));

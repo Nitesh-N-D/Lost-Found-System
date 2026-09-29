@@ -57,6 +57,8 @@ function ItemDetails() {
   );
 
   const { item, similarItems = [] } = data;
+  const itemImages = [item.imageUrl, ...(Array.isArray(item.gallery) ? item.gallery : [])]
+    .filter((image, index, images) => image && images.indexOf(image) === index);
 
   const submitClaim = async (event) => {
     event.preventDefault();
@@ -82,16 +84,16 @@ function ItemDetails() {
       <div className="grid gap-8 xl:grid-cols-[1.15fr,0.85fr]">
         <div className="space-y-6">
           <div className="overflow-hidden rounded-[36px] border border-stone-200 bg-white/5">
-            {item.imageUrl ? (
-              <img alt={item.title} className="h-[420px] w-full object-cover" src={item.imageUrl} />
+            {itemImages[0] ? (
+              <img alt={item.title} className="h-[320px] w-full object-cover sm:h-[420px]" src={itemImages[0]} />
             ) : (
               <div className="flex h-[420px] items-center justify-center bg-stone-100 text-stone-500">
                 No image uploaded
               </div>
             )}
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[item.imageUrl, item.imageUrl, item.imageUrl].map((image, index) => (
+          {itemImages.length > 1 ? <div className="grid gap-4 sm:grid-cols-3">
+            {itemImages.slice(1, 4).map((image, index) => (
               <div
                 key={`${image || "placeholder"}-${index}`}
                 className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/5"
@@ -103,7 +105,7 @@ function ItemDetails() {
                 )}
               </div>
             ))}
-          </div>
+          </div> : null}
         </div>
 
         <div className="space-y-6">
@@ -163,22 +165,12 @@ function ItemDetails() {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-stone-200 bg-white/5 p-6">
+          <div className="surface-card rounded-[30px] border p-6">
             <SectionHeading
-              description="Phone access stays locked until a claim is approved."
-              eyebrow="Owner info"
-              title={item.reportedBy?.name || "Owner details"}
+              description="Add a few identifying details to your claim to start a private conversation. Contact information is only shared after a claim is approved."
+              eyebrow="Connect safely"
+              title={`A note for ${item.reportedBy?.name || "the reporter"}`}
             />
-            <div className="mt-5 space-y-3 text-sm text-stone-600">
-              <div className="flex items-center gap-3">
-                <Icon path={icons.email} />
-                <span>{item.reportedBy?.email}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Icon path={icons.phone} />
-                <span>{item.reportedBy?.phone || "Phone available after claim approval"}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

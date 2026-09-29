@@ -4,7 +4,7 @@ const AppError = require("../utils/AppError");
 const generateToken = require("../utils/generateToken");
 
 const getAdminEmails = () =>
-  (process.env.ADMIN_EMAILS || "niteshndmaster@gmail.com")
+  (process.env.ADMIN_EMAILS || "")
     .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
@@ -65,9 +65,14 @@ const loginUser = async ({ email, password }) => {
 };
 
 const updateProfile = async (userId, payload) => {
+  const allowedFields = ["name", "phone", "bio"];
+  const safePayload = Object.fromEntries(
+    Object.entries(payload).filter(([key]) => allowedFields.includes(key))
+  );
+
   const user = await User.findByIdAndUpdate(
     userId,
-    payload,
+    safePayload,
     { new: true, runValidators: true }
   );
 

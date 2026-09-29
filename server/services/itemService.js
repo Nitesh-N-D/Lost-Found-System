@@ -1,15 +1,25 @@
-const Item = require("../models/Item");
 const mongoose = require("mongoose");
+const Item = require("../models/Item");
+const Claim = require("../models/Claim");
+const Chat = require("../models/Chat");
 const cloudinary = require("../config/cloudinary");
 const AppError = require("../utils/AppError");
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const uploadItemImage = async (fileBuffer) =>
   new Promise((resolve, reject) => {
+    const config = cloudinary.config();
+    if (!config.cloud_name || !config.api_key || !config.api_secret) {
+      reject(new AppError("Image uploads are not configured on this server.", 503));
+      return;
+    }
+
     const stream = cloudinary.uploader.upload_stream(
       { folder: "lostfound_items" },
       (error, result) => {
         if (error) {
-          reject(error);
+          reject(new AppError("Image upload failed. Please try again.", 502));
           return;
         }
 
@@ -30,12 +40,28 @@ const createItem = async (payload, userId, file) => {
     imagePublicId = result.public_id;
   }
 
-  return Item.create({
-    ...payload,
-    imageUrl,
-    imagePublicId,
-    reportedBy: userId,
-  });
+  const allowedFields = ["title", "description", "category", "type", "location", "date"];
+  const safePayload = Object.fromEntries(
+    Object.entries(payload).filter(([key]) => allowedFields.includes(key))
+  );
+
+  try {
+    return await Item.create({
+      ...safePayload,
+      imageUrl,
+      imagePublicId,
+      reportedBy: userId,
+    });
+  } catch (error) {
+    if (imagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(imagePublicId);
+      } catch (cleanupError) {
+        console.error("Unable to clean up an unlinked item image:", cleanupError.message);
+      }
+    }
+    throw error;
+  }
 };
 
 const getItems = async (query) => {
@@ -52,22 +78,23 @@ const getItems = async (query) => {
   const filters = {};
 
   if (keyword) {
+    const safeKeyword = escapeRegex(String(keyword).slice(0, 80));
     filters.$or = [
-      { title: { $regex: keyword, $options: "i" } },
-      { description: { $regex: keyword, $options: "i" } },
-      { category: { $regex: keyword, $options: "i" } },
+      { title: { $regex: safeKeyword, $options: "i" } },
+      { description: { $regex: safeKeyword, $options: "i" } },
+      { category: { $regex: safeKeyword, $options: "i" } },
     ];
   }
   if (type) filters.type = type;
-  if (category) filters.category = { $regex: category, $options: "i" };
-  if (location) filters.location = { $regex: location, $options: "i" };
+  if (category) filters.category = { $regex: escapeRegex(String(category).slice(0, 50)), $options: "i" };
+  if (location) filters.location = { $regex: escapeRegex(String(location).slice(0, 120)), $options: "i" };
   if (status) filters.status = status;
 
   const skip = (Number(page) - 1) * Number(limit);
 
   const [items, total] = await Promise.all([
     Item.find(filters)
-      .populate("reportedBy", "name email phone bio")
+      .populate("reportedBy", "name")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit)),
@@ -91,7 +118,7 @@ const getItemById = async (id) => {
 
   const item = await Item.findById(id).populate(
     "reportedBy",
-    "name email phone bio"
+    "name"
   );
 
   if (!item) {
@@ -121,17 +148,22 @@ const updateItem = async (id, payload, user) => {
     throw new AppError("Item not found", 404);
   }
 
-  const isOwner = item.reportedBy.toString() === user._id.toString();
+  const isOwner = Boolean(user?._id) && item.reportedBy?.toString() === user._id.toString();
   const isAdmin = user.role === "admin";
 
   if (!isOwner && !isAdmin) {
     throw new AppError("Not authorized to update this item", 403);
   }
 
-  return Item.findByIdAndUpdate(id, payload, {
+  const allowedFields = ["title", "description", "category", "type", "location", "date", "status"];
+  const safePayload = Object.fromEntries(
+    Object.entries(payload).filter(([key]) => allowedFields.includes(key))
+  );
+
+  return Item.findByIdAndUpdate(id, safePayload, {
     new: true,
     runValidators: true,
-  }).populate("reportedBy", "name email phone bio");
+  }).populate("reportedBy", "name");
 };
 
 const deleteItem = async (id, user) => {
@@ -145,18 +177,26 @@ const deleteItem = async (id, user) => {
     throw new AppError("Item not found", 404);
   }
 
-  const isOwner = item.reportedBy.toString() === user._id.toString();
+  const isOwner = Boolean(user?._id) && item.reportedBy?.toString() === user._id.toString();
   const isAdmin = user.role === "admin";
 
   if (!isOwner && !isAdmin) {
     throw new AppError("Not authorized to delete this item", 403);
   }
 
-  if (item.imagePublicId) {
-    await cloudinary.uploader.destroy(item.imagePublicId);
-  }
-
+  await Promise.all([
+    Claim.deleteMany({ item: item._id }),
+    Chat.deleteMany({ item: item._id }),
+  ]);
   await item.deleteOne();
+
+  if (item.imagePublicId) {
+    try {
+      await cloudinary.uploader.destroy(item.imagePublicId);
+    } catch (error) {
+      console.error("Unable to remove item image from Cloudinary:", error.message);
+    }
+  }
 };
 
 module.exports = {
@@ -167,6 +207,6 @@ module.exports = {
   deleteItem,
   getMyItems: async (userId) =>
     Item.find({ reportedBy: userId })
-      .populate("reportedBy", "name email phone bio")
+      .populate("reportedBy", "name")
       .sort({ createdAt: -1 }),
 };

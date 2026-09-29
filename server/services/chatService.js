@@ -20,6 +20,10 @@ const getAuthorizedChat = async (claimId, userId) => {
     throw new AppError("Claim not found", 404);
   }
 
+  if (!claim.item?.reportedBy) {
+    throw new AppError("The item for this claim is no longer available.", 404);
+  }
+
   const isOwner = claim.item.reportedBy?._id.toString() === userId.toString();
   const isClaimant = claim.claimant.toString() === userId.toString();
 
@@ -28,27 +32,28 @@ const getAuthorizedChat = async (claimId, userId) => {
   }
 
   let chat = await Chat.findOne({ claim: claimId })
-    .populate("participants", "name email phone")
-    .populate("messages.sender", "name email");
+    .populate("participants", "name")
+    .populate("messages.sender", "name");
 
   if (!chat) {
-    chat = await Chat.create({
-      claim: claim._id,
-      item: claim.item._id,
-      participants: [claim.claimant, claim.item.reportedBy._id],
-      messages: claim.message
-        ? [
-            {
-              sender: claim.claimant,
-              message: claim.message,
-            },
-          ]
-        : [],
-    });
+    try {
+      await Chat.create({
+        claim: claim._id,
+        item: claim.item._id,
+        participants: [claim.claimant, claim.item.reportedBy._id],
+        messages: claim.message
+          ? [{ sender: claim.claimant, message: claim.message }]
+          : [],
+      });
+    } catch (error) {
+      if (error.code !== 11000) {
+        throw error;
+      }
+    }
 
     chat = await Chat.findOne({ claim: claimId })
-      .populate("participants", "name email phone")
-      .populate("messages.sender", "name email");
+      .populate("participants", "name")
+      .populate("messages.sender", "name");
   }
 
   return { chat, claim };
@@ -79,7 +84,7 @@ const sendMessage = async (claimId, userId, message) => {
   });
 
   await chat.save();
-  await chat.populate("messages.sender", "name email");
+  await chat.populate("messages.sender", "name");
 
   return {
     chat,

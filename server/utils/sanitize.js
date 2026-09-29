@@ -1,17 +1,18 @@
-const sanitizeValue = (value) => {
+const sanitizeValue = (value, key = "") => {
   if (typeof value === "string") {
-    return value.replace(/[<>]/g, "").trim();
+    // Passwords are opaque credentials: whitespace can be intentional.
+    return key === "password" ? value : value.trim();
   }
 
   if (Array.isArray(value)) {
-    return value.map(sanitizeValue);
+    return value.map((entry) => sanitizeValue(entry));
   }
 
   if (value && typeof value === "object") {
     return Object.fromEntries(
       Object.entries(value).map(([key, nestedValue]) => [
         key,
-        sanitizeValue(nestedValue),
+        sanitizeValue(nestedValue, key),
       ])
     );
   }
@@ -22,10 +23,6 @@ const sanitizeValue = (value) => {
 const sanitizeBody = (req, _res, next) => {
   if (req.body) {
     req.body = sanitizeValue(req.body);
-  }
-
-  if (req.query) {
-    req.query = sanitizeValue(req.query);
   }
 
   next();

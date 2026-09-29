@@ -43,6 +43,8 @@ const steps = [
 function Home() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [itemsError, setItemsError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   usePageMeta({
     title: "Lost & Found System | Secure item recovery workflow",
@@ -59,7 +61,10 @@ function Home() {
         if (active) setItems(Array.isArray(data?.items) ? data.items : []);
       })
       .catch(() => {
-        if (active) setItems([]);
+        if (active) {
+          setItems([]);
+          setItemsError(true);
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -68,7 +73,7 @@ function Home() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [retryCount]);
 
   return (
     <div className="overflow-hidden">
@@ -110,10 +115,9 @@ function Home() {
               </span>
             </div>
 
-            <div className="mt-12 flex items-center gap-4 border-t border-stone-200 pt-6 text-sm text-stone-600">
-              <span className="flex -space-x-2" aria-hidden="true"><i className="h-9 w-9 rounded-full border-2 border-white bg-emerald-200" /><i className="h-9 w-9 rounded-full border-2 border-white bg-amber-200" /><i className="h-9 w-9 rounded-full border-2 border-white bg-sky-200" /></span>
-              <span>Every report brings someone closer to a happy return.</span>
-            </div>
+            <p className="mt-10 border-t border-stone-200 pt-6 text-sm text-stone-600">
+              Clear details help the right person recognize a match.
+            </p>
           </div>
 
           <div className="relative">
@@ -146,7 +150,7 @@ function Home() {
                     key={feature.title}
                     className="soft-panel rounded-[22px] border p-5 transition hover:-translate-y-1 hover:bg-white"
                   >
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-900">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-900">
                       <Icon path={feature.icon} />
                     </div>
                     <p className="mt-4 text-base font-semibold text-stone-900">{feature.title}</p>
@@ -205,23 +209,34 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+      <section id="reports" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-20 lg:px-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             eyebrow="Listings"
             title="Recent reports"
-            description="A cleaner item feed with clearer status handling and a more structured presentation."
+            description="Browse recent items reported by people in your community."
           />
           <Link to="/dashboard/items" className="text-sm font-semibold text-emerald-900 hover:text-emerald-700">
             View all items
           </Link>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {loading
-            ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />)
-            : Array.isArray(items)
-            ? items.map((item) => <ItemCard item={item} key={item._id} />)
-            : null}
+          {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : null}
+          {!loading && itemsError ? (
+            <div className="surface-card rounded-[26px] border p-7 md:col-span-2 xl:col-span-3" role="alert">
+              <p className="font-semibold text-stone-900">Recent reports are temporarily unavailable.</p>
+              <p className="mt-2 text-sm text-stone-600">Please try again in a moment.</p>
+              <button className="mt-4 text-sm font-semibold text-emerald-900 underline underline-offset-4" onClick={() => { setLoading(true); setItemsError(false); setRetryCount((count) => count + 1); }} type="button">Try again</button>
+            </div>
+          ) : null}
+          {!loading && !itemsError && items.length === 0 ? (
+            <div className="surface-card rounded-[26px] border p-7 md:col-span-2 xl:col-span-3">
+              <p className="font-semibold text-stone-900">No reports yet</p>
+              <p className="mt-2 text-sm text-stone-600">Be the first to post an item and help someone find their way home.</p>
+              <Link className="mt-4 inline-flex text-sm font-semibold text-emerald-900 underline underline-offset-4" to="/report-item">Report an item</Link>
+            </div>
+          ) : null}
+          {!loading && !itemsError ? items.map((item) => <ItemCard item={item} key={item._id} />) : null}
         </div>
       </section>
 
@@ -245,13 +260,13 @@ function Home() {
       <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-10">
         <div className="surface-card rounded-[34px] border p-8 text-center md:p-12">
           <p className="eyebrow text-xs font-semibold uppercase">
-            Start with a cleaner workflow
+            Ready to get started?
           </p>
           <h2 className="mx-auto mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-stone-900 md:text-5xl">
-            Bring reporting, claims, and communication into one straightforward system.
+            Help a lost item find its way home.
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-stone-600">
-            The interface is structured to feel simple and professional while still supporting the full recovery flow end to end.
+            Post a report, review claims, and keep the conversation together until there’s a safe handoff.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
             <Link to="/register">
