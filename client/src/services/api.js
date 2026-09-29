@@ -27,11 +27,12 @@ api.interceptors.response.use(
       window.dispatchEvent(new Event("auth:expired"));
     }
 
-    return Promise.reject(
-      error.response?.data?.message
-        ? new Error(error.response.data.message)
-        : error
-    );
+    if (error.response?.data?.message) {
+      const normalizedError = new Error(error.response.data.message);
+      normalizedError.status = error.response.status;
+      return Promise.reject(normalizedError);
+    }
+    return Promise.reject(error);
   }
 );
 

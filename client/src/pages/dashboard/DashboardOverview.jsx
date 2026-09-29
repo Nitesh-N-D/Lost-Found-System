@@ -35,7 +35,7 @@ function DashboardOverview() {
   }, []);
 
   if (loading) return <PageLoader label="Loading dashboard..." />;
-  if (!dashboard) return null;
+  if (!dashboard) return <p className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-800">Dashboard data could not be loaded. Refresh the page to try again.</p>;
 
   const overview = dashboard?.overview ?? {
     totalItems: 0,
@@ -69,7 +69,7 @@ function DashboardOverview() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <section className="rounded-[32px] border border-stone-200 bg-white/[0.03] p-6 md:p-7">
+        <section className="surface-card rounded-[32px] border p-6 md:p-7">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-stone-900">Recent claims</h2>
             <Link className="text-sm text-stone-600 hover:text-stone-900" to="/dashboard/claims">
@@ -77,7 +77,7 @@ function DashboardOverview() {
             </Link>
           </div>
           <div className="mt-5 space-y-4">
-            {myClaims.map((claim) => (
+            {myClaims.length ? myClaims.map((claim) => (
               <div key={claim._id} className="rounded-[24px] border border-stone-200 bg-stone-50 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -87,19 +87,19 @@ function DashboardOverview() {
                   <StatusBadge status={claim.status} />
                 </div>
               </div>
-            ))}
+            )) : <p className="text-sm text-stone-500">No recent claims yet.</p>}
           </div>
         </section>
 
-        <section className="rounded-[32px] border border-stone-200 bg-white/[0.03] p-6 md:p-7">
+        <section className="surface-card rounded-[32px] border p-6 md:p-7">
           <h2 className="text-xl font-semibold text-stone-900">Notifications</h2>
           <div className="mt-5 space-y-4">
-            {notifications.map((notification) => (
+            {notifications.length ? notifications.map((notification) => (
               <div key={notification.id} className="rounded-[24px] border border-stone-200 bg-stone-50 p-4">
                 <p className="font-semibold text-stone-900">{notification.title}</p>
                 <p className="mt-2 text-sm leading-6 text-stone-500">{notification.description}</p>
               </div>
-            ))}
+            )) : <p className="text-sm text-stone-500">You’re all caught up.</p>}
           </div>
         </section>
       </div>

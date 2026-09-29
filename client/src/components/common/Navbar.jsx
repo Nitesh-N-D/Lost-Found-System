@@ -51,7 +51,7 @@ function Navbar() {
           {user ? (
             <>
               <Link
-                className="rounded-full border border-stone-200 bg-white/[0.03] px-4 py-2 text-sm text-slate-200 transition hover:border-white/20 hover:bg-white/[0.06]"
+                className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm text-stone-700 transition hover:border-emerald-800/30 hover:bg-emerald-50"
                 to="/dashboard/settings"
               >
                 {user.name}
@@ -62,7 +62,7 @@ function Navbar() {
             </>
           ) : (
             <>
-              <Link className="text-sm text-slate-200" to="/login">
+              <Link className="text-sm text-stone-700 hover:text-emerald-900" to="/login">
                 Sign in
               </Link>
               <Link to="/register">
@@ -75,6 +75,7 @@ function Navbar() {
         <button
           aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={menuOpen}
+          type="button"
           className="rounded-full border border-stone-200 bg-white p-2 text-emerald-950 md:hidden"
           onClick={() => setMenuOpen((value) => !value)}
         >
@@ -85,34 +86,34 @@ function Navbar() {
       {menuOpen ? (
         <div className="mobile-menu border-t px-6 py-4 md:hidden">
           <div className="flex flex-col gap-2">
-            <Link className="rounded-2xl px-4 py-3 text-sm text-slate-200 hover:bg-white/[0.04]" onClick={() => setMenuOpen(false)} to="/">
+            <Link className="rounded-2xl px-4 py-3 text-sm text-stone-700 hover:bg-stone-100" onClick={() => setMenuOpen(false)} to="/">
               Home
             </Link>
             <Link
-              className="rounded-2xl px-4 py-3 text-sm text-slate-200 hover:bg-white/[0.04]"
+              className="rounded-2xl px-4 py-3 text-sm text-stone-700 hover:bg-stone-100"
               onClick={() => setMenuOpen(false)}
               to="/dashboard"
             >
               Dashboard
             </Link>
             <Link
-              className="rounded-2xl px-4 py-3 text-sm text-slate-200 hover:bg-white/[0.04]"
+              className="rounded-2xl px-4 py-3 text-sm text-stone-700 hover:bg-stone-100"
               onClick={() => setMenuOpen(false)}
               to="/report-item"
             >
               Report Item
             </Link>
             {isAdminUser(user) ? (
-              <Link className="rounded-2xl px-4 py-3 text-sm text-slate-200 hover:bg-white/[0.04]" onClick={() => setMenuOpen(false)} to="/admin">
+              <Link className="rounded-2xl px-4 py-3 text-sm text-stone-700 hover:bg-stone-100" onClick={() => setMenuOpen(false)} to="/admin">
                 Admin
               </Link>
             ) : null}
             {user ? (
-              <button className="rounded-2xl px-4 py-3 text-left text-sm text-rose-300 hover:bg-white/[0.04]" onClick={logout}>
+              <button className="rounded-2xl px-4 py-3 text-left text-sm text-rose-700 hover:bg-rose-50" onClick={() => { setMenuOpen(false); logout(); }}>
                 Logout
               </button>
             ) : (
-              <Link className="rounded-2xl px-4 py-3 text-sm text-stone-900 hover:bg-white/[0.04]" onClick={() => setMenuOpen(false)} to="/login">
+              <Link className="rounded-2xl px-4 py-3 text-sm text-stone-700 hover:bg-stone-100" onClick={() => setMenuOpen(false)} to="/login">
                 Sign in
               </Link>
             )}

@@ -8,7 +8,7 @@ function ChatSidebar({ chatData }) {
     : [];
 
   return (
-    <aside className="space-y-4 rounded-[28px] border border-stone-200 bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(15,23,42,0.82))] p-5">
+    <aside className="surface-card space-y-4 rounded-[28px] border p-5">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.35em] text-stone-500">
           Chat sidebar

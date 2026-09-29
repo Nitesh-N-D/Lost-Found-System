@@ -10,9 +10,18 @@ export const loadStoredUser = () => {
 };
 
 export const saveStoredUser = (user) => {
-  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  try {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 export const clearStoredUser = () => {
-  localStorage.removeItem(USER_STORAGE_KEY);
+  try {
+    localStorage.removeItem(USER_STORAGE_KEY);
+  } catch {
+    // Storage may be unavailable in private browsing or restricted contexts.
+  }
 };

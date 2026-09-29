@@ -8,13 +8,19 @@ import Button from "../../components/common/Button";
 
 function MyClaims() {
   const [claims, setClaims] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     claimService
       .getMine()
       .then(setClaims)
-      .catch((error) => toast.error(error.message));
+      .catch((error) => { setLoadError(true); toast.error(error.message); })
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) return <p className="text-sm text-stone-500">Loading your claims...</p>;
+  if (loadError) return <p className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-800">Your claims could not be loaded. Refresh the page to try again.</p>;
 
   return claims.length === 0 ? (
     <EmptyState
@@ -24,7 +30,7 @@ function MyClaims() {
   ) : (
     <div className="space-y-4">
       {claims.map((claim) => (
-        <div key={claim._id} className="rounded-[28px] border border-stone-200 bg-white/5 p-6">
+        <div key={claim._id} className="rounded-[28px] border border-stone-200 bg-white p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xl font-semibold text-stone-900">{claim.item?.title}</p>

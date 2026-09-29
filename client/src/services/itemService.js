@@ -9,7 +9,7 @@ export const itemService = {
       try {
         return await unwrap(api.get(endpoint));
       } catch (error) {
-        if (!error.message.includes("404")) {
+        if (error.status !== 404) {
           throw error;
         }
       }

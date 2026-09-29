@@ -28,7 +28,7 @@ function SettingsPage() {
   };
 
   return (
-    <div className="rounded-[32px] border border-stone-200 bg-white/5 p-6">
+    <div className="rounded-[32px] border border-stone-200 bg-white p-6">
       <h1 className="text-3xl font-semibold text-stone-900">Profile settings</h1>
       <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
         {[

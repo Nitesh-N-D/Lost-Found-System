@@ -14,6 +14,8 @@ function ChatPage() {
   const [chatData, setChatData] = useState(null);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -23,7 +25,15 @@ function ChatPage() {
       .then((data) => {
         if (active) setChatData(data);
       })
-      .catch((error) => toast.error(error.message));
+      .catch((error) => {
+        if (active) {
+          setLoadError(true);
+          toast.error(error.message);
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
     return () => {
       active = false;
@@ -45,11 +55,11 @@ function ChatPage() {
     }
   };
 
-  if (!chatData) {
+  if (loading) {
     return <PageLoader label="Loading secure conversation..." />;
   }
 
-  if (!chatData?.chat) {
+  if (loadError || !chatData?.chat) {
     return (
       <EmptyState
         description="The conversation is not available yet. Try refreshing in a moment."
@@ -63,7 +73,7 @@ function ChatPage() {
       <ChatSidebar chatData={chatData} />
 
       <div className="space-y-6">
-        <div className="rounded-[28px] border border-stone-200 bg-white/5 p-6">
+        <div className="rounded-[28px] border border-stone-200 bg-white p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xl font-semibold text-stone-900">Claim conversation</p>
@@ -92,7 +102,7 @@ function ChatPage() {
           />
         )}
 
-        <form className="rounded-[28px] border border-stone-200 bg-white/5 p-4" onSubmit={sendMessage}>
+        <form className="rounded-[28px] border border-stone-200 bg-white p-4" onSubmit={sendMessage}>
           <div className="flex flex-col gap-3 md:flex-row">
             <input
               className="flex-1 rounded-full border border-stone-200 bg-white px-5 py-3 text-stone-900 outline-none transition focus:border-cyan-400/50"

@@ -28,12 +28,12 @@ function ChatWindow({ messages }) {
               <div
                 className={`max-w-[80%] rounded-3xl px-4 py-3 ${
                   mine
-                    ? "bg-[var(--color-primary)] text-slate-950"
-                    : "bg-white/10 text-stone-900"
+                    ? "bg-[var(--color-primary)] text-white"
+                    : "bg-stone-100 text-stone-900"
                 }`}
               >
                 <p className="text-sm leading-6">{message.message}</p>
-                <p className={`mt-2 text-[11px] ${mine ? "text-slate-700" : "text-stone-500"}`}>
+                <p className={`mt-2 text-[11px] ${mine ? "text-emerald-100" : "text-stone-500"}`}>
                   {formatRelativeTime(message.timestamp)}
                 </p>
               </div>

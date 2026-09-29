@@ -83,7 +83,7 @@ function ItemDetails() {
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
       <div className="grid gap-8 xl:grid-cols-[1.15fr,0.85fr]">
         <div className="space-y-6">
-          <div className="overflow-hidden rounded-[36px] border border-stone-200 bg-white/5">
+          <div className="overflow-hidden rounded-[36px] border border-stone-200 bg-white">
             {itemImages[0] ? (
               <img alt={item.title} className="h-[320px] w-full object-cover sm:h-[420px]" src={itemImages[0]} />
             ) : (
@@ -96,7 +96,7 @@ function ItemDetails() {
             {itemImages.slice(1, 4).map((image, index) => (
               <div
                 key={`${image || "placeholder"}-${index}`}
-                className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/5"
+                className="overflow-hidden rounded-[24px] border border-stone-200 bg-white"
               >
                 {image ? (
                   <img alt={`${item.title} preview ${index + 1}`} className="h-28 w-full object-cover" src={image} />
@@ -109,7 +109,7 @@ function ItemDetails() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-[36px] border border-stone-200 bg-white/5 p-8">
+          <div className="rounded-[36px] border border-stone-200 bg-white p-8">
             <div className="flex flex-wrap items-center gap-3">
               <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-primary)]">
                 {item.type}
