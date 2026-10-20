@@ -10,6 +10,8 @@ import { Icon } from "../components/common/Icons";
 import icons from "../components/common/iconPaths";
 import Footer from "../components/common/Footer";
 
+const emptyFilters = { keyword: "", type: "", category: "", location: "", dateFrom: "", dateTo: "", status: "" };
+
 const features = [
   {
     title: "Item reporting",
@@ -45,6 +47,9 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [itemsError, setItemsError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [searchForm, setSearchForm] = useState(emptyFilters);
+  const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
+  const [filterError, setFilterError] = useState("");
 
   usePageMeta({
     title: "Lost & Found System | Secure item recovery workflow",
@@ -55,8 +60,9 @@ function Home() {
   useEffect(() => {
     let active = true;
 
+    const params = Object.fromEntries(Object.entries(appliedFilters).filter(([, value]) => value !== ""));
     itemService
-      .list({ limit: 6 })
+      .list({ ...params, limit: Object.values(appliedFilters).some(Boolean) ? 24 : 6 })
       .then((data) => {
         if (active) setItems(Array.isArray(data?.items) ? data.items : []);
       })
@@ -70,10 +76,28 @@ function Home() {
         if (active) setLoading(false);
       });
 
-    return () => {
+    const handleSearch = (event) => {
+    event.preventDefault();
+    if (searchForm.dateFrom && searchForm.dateTo && searchForm.dateFrom > searchForm.dateTo) {
+      setFilterError("Start date must be on or before end date.");
+      return;
+    }
+    setFilterError("");
+    setAppliedFilters({ ...searchForm });
+  };
+
+  const resetSearch = () => {
+    setSearchForm(emptyFilters);
+    setAppliedFilters(emptyFilters);
+    setFilterError("");
+  };
+
+  const hasActiveFilters = Object.values(appliedFilters).some(Boolean);
+
+  return () => {
       active = false;
     };
-  }, [retryCount]);
+  }, [retryCount, appliedFilters]);
 
   return (
     <div className="overflow-hidden">
