@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { itemService } from "../services/itemService";
+import { itemReportService } from "../services/itemReportService";
 import { claimService } from "../services/claimService";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { useAuth } from "../hooks/useAuth";
 import PageLoader from "../components/common/PageLoader";
 import StatusBadge from "../components/common/StatusBadge";
 import Button from "../components/common/Button";
+import Modal from "../components/common/Modal";
 import SectionHeading from "../components/common/SectionHeading";
 import ItemCard from "../components/items/ItemCard";
 import { formatDate } from "../utils/formatters";
@@ -22,6 +24,10 @@ function ItemDetails() {
   const [claimMessage, setClaimMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("incorrect_information");
+  const [reportDetails, setReportDetails] = useState("");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -86,12 +92,28 @@ function ItemDetails() {
     }
   };
 
-  const reportIssue = () => {
-    const subject = encodeURIComponent(`Issue with listing: ${item.title}`);
-    const details = encodeURIComponent(
-      `Listing ID: ${item._id}\nListing type: ${item.type}\nPlease describe the issue below:\n\n`
-    );
-    window.location.href = `mailto:support@lost-found-system.vercel.app?subject=${subject}&body=${details}`;
+  const submitReport = async (event) => {
+    event.preventDefault();
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setReportSubmitting(true);
+      await itemReportService.create(item._id, {
+        reason: reportReason,
+        details: reportDetails.trim(),
+      });
+      toast.success("Thanks. Your listing report was sent to the moderation team.");
+      setReportOpen(false);
+      setReportReason("incorrect_information");
+      setReportDetails("");
+    } catch (error) {
+      toast.error(error?.message || "We couldn’t submit your report. Please try again.");
+    } finally {
+      setReportSubmitting(false);
+    }
   };
 
   return (
@@ -159,7 +181,7 @@ function ItemDetails() {
               {user ? (
                 <Link to="/dashboard/claims"><Button className="w-full justify-center" variant="secondary">View my claims and chats</Button></Link>
               ) : null}
-              <Button className="w-full justify-center" onClick={reportIssue} type="button" variant="ghost">Report issue</Button>
+              <Button className="w-full justify-center" onClick={() => user ? setReportOpen(true) : navigate("/login")} type="button" variant="ghost">{user ? "Report issue" : "Sign in to report issue"}</Button>
             </div>
           </div>
 
@@ -179,6 +201,43 @@ function ItemDetails() {
           {similarItems.map((similarItem) => <ItemCard item={similarItem} key={similarItem._id} />)}
         </div>
       </section>
+
+      <Modal open={reportOpen} onClose={() => setReportOpen(false)} title="Report this listing">
+        <form className="space-y-4" onSubmit={submitReport}>
+          <p className="text-sm leading-6 text-stone-600">
+            Tell the moderation team what looks wrong. Reports are attached to this listing and reviewed by an administrator.
+          </p>
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-stone-700">Reason</span>
+            <select
+              className="form-control w-full rounded-[16px] border px-4 py-3 outline-none"
+              onChange={(event) => setReportReason(event.target.value)}
+              value={reportReason}
+            >
+              <option value="incorrect_information">Incorrect information</option>
+              <option value="possible_scam">Possible scam or misleading listing</option>
+              <option value="inappropriate_content">Inappropriate content</option>
+              <option value="duplicate_listing">Duplicate listing</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-stone-700">Additional details (optional)</span>
+            <textarea
+              className="form-control min-h-28 w-full rounded-[16px] border px-4 py-3 outline-none"
+              maxLength={500}
+              onChange={(event) => setReportDetails(event.target.value)}
+              placeholder="Share details that will help the moderation team review the report."
+              value={reportDetails}
+            />
+            <span className="text-xs text-stone-500">{reportDetails.length}/500 characters</span>
+          </label>
+          <div className="flex justify-end gap-3">
+            <Button disabled={reportSubmitting} onClick={() => setReportOpen(false)} type="button" variant="secondary">Cancel</Button>
+            <Button disabled={reportSubmitting} type="submit">{reportSubmitting ? "Submitting..." : "Submit report"}</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
