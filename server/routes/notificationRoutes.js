@@ -5,6 +5,7 @@ const {
   listNotifications,
   markNotificationRead,
   markAllNotificationsRead,
+  deleteNotification,
 } = require("../controllers/notificationController");
 const {
   notificationQueryValidator,
@@ -16,5 +17,6 @@ router.use(protect);
 router.get("/", notificationQueryValidator, validateRequest, listNotifications);
 router.patch("/read-all", markAllNotificationsRead);
 router.patch("/:id/read", notificationIdValidator, validateRequest, markNotificationRead);
+router.delete("/:id", notificationIdValidator, validateRequest, deleteNotification);
 
 module.exports = router;
