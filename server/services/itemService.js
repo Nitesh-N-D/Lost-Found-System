@@ -8,7 +8,6 @@ const AppError = require("../utils/AppError");
 const matchingService = require("./matchingService");
 const { buildItemFilters } = require("../utils/itemFilters");
 
-const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const uploadItemImage = async (fileBuffer) =>
   new Promise((resolve, reject) => {
