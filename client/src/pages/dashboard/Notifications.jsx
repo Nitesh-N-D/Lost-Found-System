@@ -46,6 +46,17 @@ function Notifications() {
     }
   };
 
+  const dismissNotification = async (notification) => {
+    try {
+      await notificationService.dismiss(notification._id);
+      setNotifications((current) => current.filter((entry) => entry._id !== notification._id));
+      if (!notification.readAt) setUnreadCount((count) => Math.max(0, count - 1));
+      toast.success("Notification dismissed.");
+    } catch (error) {
+      toast.error(error.message || "This notification could not be dismissed.");
+    }
+  };
+
   const markAllRead = async () => {
     if (!unreadCount || busy) return;
     try {
@@ -99,9 +110,12 @@ function Notifications() {
                     </Link>
                   )}
                 </div>
-                {!notification.readAt && (
-                  <Button onClick={() => markRead(notification._id)} variant="secondary">Mark read</Button>
-                )}
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  {!notification.readAt && (
+                    <Button onClick={() => markRead(notification._id)} variant="secondary">Mark read</Button>
+                  )}
+                  <Button onClick={() => dismissNotification(notification)} variant="secondary">Dismiss</Button>
+                </div>
               </div>
             </article>
           ))}
