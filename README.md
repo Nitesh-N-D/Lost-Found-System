@@ -148,3 +148,8 @@ node scripts/e2e-match-notifications.mjs
 ```
 
 The script creates one lost and one found test report, verifies each account can see the reciprocal match and notification, then attempts to delete only those reports and their generated notifications. It requires Node.js 18 or newer. Do not use personal accounts. The production API is blocked by default; explicitly setting `E2E_ALLOW_PRODUCTION_WRITES=1` overrides that safeguard and should only be done with dedicated test accounts and after reviewing the impact. A staging database is strongly preferred.
+
+
+### Recovery tracking
+
+Once a claim is approved, the claimant and listing owner can update the shared recovery state (not started, handoff arranged, recovered, or disputed) from their dashboard claim views. Progress notes and a change history are visible only through the claimant's and listing owner's authenticated claim views. A recovery status is a record of participant-reported progress, not independent proof that an item was returned.
