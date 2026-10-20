@@ -2,6 +2,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/apiResponse");
 const itemService = require("../services/itemService");
 const matchingService = require("../services/matchingService");
+const MatchFeedback = require("../models/MatchFeedback");
 
 exports.createItem = asyncHandler(async (req, res) => {
   const item = await itemService.createItem(req.body, req.user._id, req.file);
@@ -15,7 +16,20 @@ exports.getItems = asyncHandler(async (req, res) => {
 
 exports.getItemMatches = asyncHandler(async (req, res) => {
   const matches = await matchingService.getMatchesForItem(req.params.id, req.user);
-  sendResponse(res, 200, "Potential matches fetched successfully", matches);
+  const matchedIds = matches.map((match) => match.item._id);
+  const feedback = matchedIds.length
+    ? await MatchFeedback.find({
+        user: req.user._id,
+        item: req.params.id,
+        matchedItem: { $in: matchedIds },
+      }).select("matchedItem feedback")
+    : [];
+  const feedbackByItem = new Map(feedback.map((entry) => [String(entry.matchedItem), entry.feedback]));
+  const enrichedMatches = matches.map((match) => ({
+    ...match,
+    feedback: feedbackByItem.get(String(match.item._id)) || null,
+  }));
+  sendResponse(res, 200, "Potential matches fetched successfully", enrichedMatches);
 });
 
 exports.getMyItems = asyncHandler(async (req, res) => {
