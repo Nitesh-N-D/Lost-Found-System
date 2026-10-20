@@ -2,6 +2,7 @@ export const dashboardLinks = [
   { label: "Overview", to: "/dashboard", icon: "dashboard", exact: true },
   { label: "My Items", to: "/dashboard/items", icon: "clipboard" },
   { label: "Saved Listings", to: "/dashboard/saved", icon: "bookmark" },
+  { label: "Notifications", to: "/dashboard/notifications", icon: "inbox" },
   { label: "My Claims", to: "/dashboard/claims", icon: "chat" },
   { label: "Received Claims", to: "/dashboard/received-claims", icon: "inbox" },
   { label: "Settings", to: "/dashboard/settings", icon: "settings" },
