@@ -1,11 +1,22 @@
 const User = require("../models/User");
 const Item = require("../models/Item");
 const Claim = require("../models/Claim");
+const ItemReport = require("../models/ItemReport");
 const AppError = require("../utils/AppError");
 const itemService = require("./itemService");
 
 const getAdminDashboard = async () => {
-  const [users, items, claims, totalUsers, bannedUsers, totalItems, openItems, activeClaims] = await Promise.all([
+  const [
+    users,
+    items,
+    claims,
+    totalUsers,
+    bannedUsers,
+    totalItems,
+    openItems,
+    activeClaims,
+    itemReports,
+  ] = await Promise.all([
     User.find().sort({ createdAt: -1 }).select("-password"),
     Item.find().populate("reportedBy", "name email").sort({ createdAt: -1 }).limit(20),
     Claim.find()
@@ -18,6 +29,11 @@ const getAdminDashboard = async () => {
     Item.countDocuments(),
     Item.countDocuments({ status: "open" }),
     Claim.countDocuments({ status: "pending" }),
+    ItemReport.find()
+      .populate("item", "title type status")
+      .populate("reportedBy", "name email")
+      .sort({ createdAt: -1 })
+      .limit(50),
   ]);
 
   return {
@@ -27,10 +43,12 @@ const getAdminDashboard = async () => {
       totalItems,
       openItems,
       activeClaims,
+      openReports: itemReports.filter((report) => report.status === "open").length,
     },
     users,
     items,
     claims,
+    itemReports,
   };
 };
 
