@@ -18,7 +18,12 @@ function SettingsPage() {
     event.preventDefault();
     try {
       setSaving(true);
-      const profile = await authService.updateProfile({\n        name: form.name,\n        phone: form.phone,\n        bio: form.bio,\n        notificationPreferences: { inAppMatches: form.inAppMatches },\n      });
+      const profile = await authService.updateProfile({
+        name: form.name,
+        phone: form.phone,
+        bio: form.bio,
+        notificationPreferences: { inAppMatches: form.inAppMatches },
+      });
       updateUser(profile);
       toast.success("Profile updated.");
     } catch (error) {
