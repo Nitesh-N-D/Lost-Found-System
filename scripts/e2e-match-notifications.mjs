@@ -1,4 +1,6 @@
-const apiBase = process.env.E2E_BASE_URL?.replace(/\/+$/, "");
+const configuredBase = process.env.E2E_BASE_URL?.replace(/\/+$/, "");
+// Accept either the backend origin or an origin ending in /api; requests below include /api paths.
+const apiBase = configuredBase?.replace(/\/api$/i, "");
 const accountA = { email: process.env.E2E_USER_A_EMAIL, password: process.env.E2E_USER_A_PASSWORD };
 const accountB = { email: process.env.E2E_USER_B_EMAIL, password: process.env.E2E_USER_B_PASSWORD };
 
