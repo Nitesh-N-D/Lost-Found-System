@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { itemService } from "../services/itemService";
 import { itemReportService } from "../services/itemReportService";
+import { savedItemService } from "../services/savedItemService";
 import { claimService } from "../services/claimService";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { useAuth } from "../hooks/useAuth";
@@ -28,6 +29,8 @@ function ItemDetails() {
   const [reportReason, setReportReason] = useState("incorrect_information");
   const [reportDetails, setReportDetails] = useState("");
   const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -46,6 +49,39 @@ function ItemDetails() {
       active = false;
     };
   }, [id]);
+
+  useEffect(() => {
+    let active = true;
+    if (!user || !id) {
+      setIsSaved(false);
+      return () => { active = false; };
+    }
+    savedItemService.list()
+      .then((items) => {
+        if (active) setIsSaved(Array.isArray(items) && items.some((savedItem) => String(savedItem._id) === String(id)));
+      })
+      .catch(() => {
+        // Saving remains available even if the initial saved-state lookup fails.
+      });
+    return () => { active = false; };
+  }, [id, user?._id]);
+
+  const toggleSaved = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      setSaving(true);
+      const result = await savedItemService.toggle(id);
+      setIsSaved(Boolean(result?.saved));
+      toast.success(result?.saved ? "Listing saved for later." : "Listing removed from saved items.");
+    } catch (error) {
+      toast.error(error?.message || "We couldn’t update your saved listings.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   usePageMeta({
     title: data?.item?.title ? `${data.item.title} | Lost & Found` : "Item details | Lost & Found",
@@ -150,6 +186,12 @@ function ItemDetails() {
               <div className="rounded-[24px] bg-stone-50 p-4"><div className="flex items-center gap-3 text-stone-600"><Icon path={icons.calendar} /><span>{formatDate(item.date)}</span></div></div>
               <div className="rounded-[24px] bg-stone-50 p-4 text-stone-600">Category: {item.category}</div>
               <div className="rounded-[24px] bg-stone-50 p-4 text-stone-600">Reported by: {item.reportedBy?.name || "Community member"}</div>
+            </div>
+
+            <div className="mt-8">
+              <Button className="w-full justify-center" disabled={saving} onClick={toggleSaved} type="button" variant="secondary">
+                {saving ? "Updating saved listings..." : isSaved ? "Remove from saved listings" : "Save listing"}
+              </Button>
             </div>
 
             <div className="mt-8 flex flex-col gap-3">

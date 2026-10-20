@@ -10,6 +10,8 @@ const {
   getItemById,
   updateItem,
   deleteItem,
+  getSavedItems,
+  toggleSavedItem,
 } = require("../controllers/itemController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -28,6 +30,8 @@ router.post(
   validateRequest,
   createItem
 );
+router.get("/saved", protect, getSavedItems);
+router.put("/:id/save", protect, toggleSavedItem);
 router.get("/me", protect, getMyItems);
 router.get("/mine", protect, getMyItems);
 router.get("/", itemQueryValidator, validateRequest, getItems);
