@@ -7,6 +7,8 @@ const {
   updateClaimStatus,
 } = require("../controllers/claimController");
 const validateRequest = require("../middleware/validateRequest");
+const { updateRecoveryStatus } = require("../controllers/claimController");
+const { updateRecoveryStatusValidator } = require("../validators/recoveryValidators");
 const {
   createClaimValidator,
   updateClaimStatusValidator,
@@ -18,5 +20,6 @@ router.post("/:itemId", protect, createClaimValidator, validateRequest, createCl
 router.get("/my-claims", protect, getMyClaims);
 router.get("/received", protect, getReceivedClaims);
 router.put("/:id", protect, updateClaimStatusValidator, validateRequest, updateClaimStatus);
+router.patch("/:id/recovery", protect, updateRecoveryStatusValidator, validateRequest, updateRecoveryStatus);
 
 module.exports = router;
