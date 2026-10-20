@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { itemService } from "../../services/itemService";
 import ItemCard from "../../components/items/ItemCard";
@@ -8,13 +9,24 @@ function MyItems() {
   const [data, setData] = useState({ items: [] });
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [matchesByItem, setMatchesByItem] = useState({});
 
   useEffect(() => {
     itemService
       .listMine()
-      .then((items) =>
-        setData({ items: Array.isArray(items) ? items : [] })
-      )
+      .then(async (items) => {
+        const reports = Array.isArray(items) ? items : [];
+        setData({ items: reports });
+        const openReports = reports.filter((item) => item.status === "open").slice(0, 5);
+        const matches = await Promise.all(openReports.map(async (item) => {
+          try {
+            return [item._id, await itemService.getMatches(item._id)];
+          } catch {
+            return [item._id, []];
+          }
+        }));
+        setMatchesByItem(Object.fromEntries(matches));
+      })
       .catch((error) => { setLoadError(true); toast.error(error.message); })
       .finally(() => setLoading(false));
   }, []);
@@ -30,7 +42,26 @@ function MyItems() {
   ) : (
     <div className="grid gap-6 md:grid-cols-2">
       {data.items.map((item) => (
-        <ItemCard item={item} key={item._id} />
+        <div className="space-y-3" key={item._id}>
+          <ItemCard item={item} />
+          {matchesByItem[item._id]?.length ? (
+            <section className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
+              <h2 className="font-semibold text-stone-900">Possible matches</h2>
+              <p className="mt-1 text-xs leading-5 text-stone-600">Suggestions use report details and are not proof of ownership.</p>
+              <div className="mt-3 space-y-2">
+                {matchesByItem[item._id].map((match) => (
+                  <Link className="flex items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-white p-3 transition hover:border-emerald-400" key={match.item._id} to={"/items/" + match.item._id}>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium text-stone-900">{match.item.title}</span>
+                      <span className="mt-1 block truncate text-xs text-stone-500">{match.item.location} · {match.item.type}</span>
+                    </span>
+                    <span className="shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-900">{match.score}%</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
+        </div>
       ))}
     </div>
   );

@@ -4,6 +4,7 @@ const Claim = require("../models/Claim");
 const Chat = require("../models/Chat");
 const cloudinary = require("../config/cloudinary");
 const AppError = require("../utils/AppError");
+const matchingService = require("./matchingService");
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -45,8 +46,9 @@ const createItem = async (payload, userId, file) => {
     Object.entries(payload).filter(([key]) => allowedFields.includes(key))
   );
 
+  let createdItem;
   try {
-    return await Item.create({
+    createdItem = await Item.create({
       ...safePayload,
       imageUrl,
       imagePublicId,
@@ -62,6 +64,15 @@ const createItem = async (payload, userId, file) => {
     }
     throw error;
   }
+
+  try {
+    await matchingService.notifyPotentialMatches(createdItem);
+  } catch (error) {
+    // Matching is best-effort; a notification failure must not fail item creation.
+    console.error("Unable to create potential-match notifications:", error.message);
+  }
+
+  return createdItem;
 };
 
 const getItems = async (query) => {

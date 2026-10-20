@@ -1,6 +1,7 @@
 const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/apiResponse");
 const itemService = require("../services/itemService");
+const matchingService = require("../services/matchingService");
 
 exports.createItem = asyncHandler(async (req, res) => {
   const item = await itemService.createItem(req.body, req.user._id, req.file);
@@ -10,6 +11,11 @@ exports.createItem = asyncHandler(async (req, res) => {
 exports.getItems = asyncHandler(async (req, res) => {
   const result = await itemService.getItems(req.query);
   sendResponse(res, 200, "Items fetched successfully", result);
+});
+
+exports.getItemMatches = asyncHandler(async (req, res) => {
+  const matches = await matchingService.getMatchesForItem(req.params.id, req.user);
+  sendResponse(res, 200, "Potential matches fetched successfully", matches);
 });
 
 exports.getMyItems = asyncHandler(async (req, res) => {

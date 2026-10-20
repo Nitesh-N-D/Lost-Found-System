@@ -15,6 +15,7 @@ const Register = lazy(() => import("./pages/auth/Register"));
 const DashboardOverview = lazy(() => import("./pages/dashboard/DashboardOverview"));
 const MyItems = lazy(() => import("./pages/dashboard/MyItems"));
 const SavedItems = lazy(() => import("./pages/dashboard/SavedItems"));
+const Notifications = lazy(() => import("./pages/dashboard/Notifications"));
 const MyClaims = lazy(() => import("./pages/dashboard/MyClaims"));
 const ReceivedClaims = lazy(() => import("./pages/dashboard/ReceivedClaims"));
 const ChatPage = lazy(() => import("./pages/dashboard/ChatPage"));
@@ -44,6 +45,7 @@ function App() {
                   <Route element={<DashboardOverview />} index />
                   <Route element={<MyItems />} path="items" />
                   <Route element={<SavedItems />} path="saved" />
+                  <Route element={<Notifications />} path="notifications" />
                   <Route element={<MyClaims />} path="claims" />
                   <Route element={<ReceivedClaims />} path="received-claims" />
                   <Route element={<ChatPage />} path="chat/:claimId" />
