@@ -134,3 +134,17 @@ npm audit --omit=dev
 - Backend CORS is now environment-driven through `CLIENT_URL` and `CLIENT_URLS`
 - The frontend API client no longer assumes localhost by default
 - Rotate any exposed secrets before pushing publicly
+
+
+### Matching and notification end-to-end check
+
+The backend unit tests include matching-score and two-sided notification-generation coverage. For a live API workflow check, use two **dedicated test accounts** on an isolated staging deployment:
+
+```bash
+E2E_BASE_URL=https://your-staging-api.example.com \\
+E2E_USER_A_EMAIL=test-a@example.com E2E_USER_A_PASSWORD='...' \\
+E2E_USER_B_EMAIL=test-b@example.com E2E_USER_B_PASSWORD='...' \\
+node scripts/e2e-match-notifications.mjs
+```
+
+The script creates one lost and one found test report, verifies each account can see the reciprocal match and notification, then attempts to delete only those reports and their generated notifications. It requires Node.js 18 or newer. Do not use personal accounts. The production API is blocked by default; explicitly setting `E2E_ALLOW_PRODUCTION_WRITES=1` overrides that safeguard and should only be done with dedicated test accounts and after reviewing the impact. A staging database is strongly preferred.
