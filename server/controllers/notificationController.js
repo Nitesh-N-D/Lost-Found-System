@@ -48,3 +48,15 @@ exports.markAllNotificationsRead = asyncHandler(async (req, res) => {
   );
   sendResponse(res, 200, "All notifications marked as read", { updated: result.modifiedCount });
 });
+
+exports.deleteNotification = asyncHandler(async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    throw new AppError("Invalid notification ID", 400);
+  }
+  const notification = await Notification.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user._id,
+  });
+  if (!notification) throw new AppError("Notification not found", 404);
+  sendResponse(res, 200, "Notification dismissed", { id: notification._id });
+});
