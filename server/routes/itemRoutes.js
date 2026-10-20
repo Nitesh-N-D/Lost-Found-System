@@ -6,6 +6,7 @@ const router = express.Router();
 const {
   createItem,
   getItems,
+  getItemMatches,
   getMyItems,
   getItemById,
   updateItem,
@@ -31,6 +32,7 @@ router.post(
   createItem
 );
 router.get("/saved", protect, getSavedItems);
+router.get("/:id/matches", protect, itemIdValidator, validateRequest, getItemMatches);
 router.put("/:id/save", protect, toggleSavedItem);
 router.get("/me", protect, getMyItems);
 router.get("/mine", protect, getMyItems);
