@@ -48,8 +48,8 @@ Design note: match scores are heuristic suggestions, not proof of ownership. Use
 
 ## P4 — Operations and adoption
 
-- [ ] Admin analytics for recovery rate, time-to-recovery, category and location trends.
-- [ ] CSV export with privacy-aware fields and admin authorization.
+- [x] Admin analytics for category, report type, claim status, and monthly listing trends. Recovery rate/time-to-recovery remains future work.
+- [x] CSV export with privacy-aware fields and admin authorization.
 - [ ] Verified organization/campus accounts and configurable domain policy.
 - [ ] Accessible multilingual UI and optional email alerts.
 - [ ] QR codes for report links and a lightweight mobile-first reporting flow.

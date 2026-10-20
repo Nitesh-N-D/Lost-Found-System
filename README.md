@@ -163,3 +163,8 @@ Open **Dashboard → Settings** and disable **In-app match notifications** to st
 ### Report search
 
 The public report list supports keyword, lost/found type, category, location, status, and date-range filters. When creating a report, the form checks open listings with the same type/category/location and warns about likely duplicate titles; the user can review the existing listing or continue if it is a different item.
+
+
+### Admin analytics and export
+
+Administrators can review aggregate counts by report type, top categories, claim status, and monthly report volume from the admin dashboard. The **Export items CSV** action is restricted to admins and exports up to 10,000 items with title, type, category, status, item date, creation date, and location; it deliberately excludes account emails and claimant details.

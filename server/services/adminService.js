@@ -4,6 +4,7 @@ const Claim = require("../models/Claim");
 const ItemReport = require("../models/ItemReport");
 const AppError = require("../utils/AppError");
 const itemService = require("./itemService");
+const { toCsv } = require("../utils/csv");
 
 const getAdminDashboard = async () => {
   const [
@@ -36,7 +37,24 @@ const getAdminDashboard = async () => {
       .limit(50),
   ]);
 
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+  sixMonthsAgo.setDate(1);
+  sixMonthsAgo.setHours(0, 0, 0, 0);
+
+  const [itemsByCategory, itemsByType, claimsByStatus, monthlyItems] = await Promise.all([
+    Item.aggregate([{ $group: { _id: "$category", count: { $sum: 1 } } }, { $sort: { count: -1, _id: 1 } }, { $limit: 8 }]),
+    Item.aggregate([{ $group: { _id: "$type", count: { $sum: 1 } } }, { $sort: { count: -1, _id: 1 } }]),
+    Claim.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }, { $sort: { _id: 1 } }]),
+    Item.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      { $group: { _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } }, count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]),
+  ]);
+
   return {
+    analytics: { itemsByCategory, itemsByType, claimsByStatus, monthlyItems },
     stats: {
       totalUsers,
       bannedUsers,
@@ -81,8 +99,29 @@ const removeItem = async (itemId) => {
   return itemService.deleteItem(itemId, { role: "admin" });
 };
 
+const exportItemsCsv = async () => {
+  const items = await Item.find()
+    .select("title type category status date createdAt location")
+    .sort({ createdAt: -1 })
+    .limit(10000)
+    .lean();
+  return toCsv(
+    ["title", "type", "category", "status", "date", "createdAt", "location"],
+    items.map((item) => [
+      item.title,
+      item.type,
+      item.category,
+      item.status,
+      item.date,
+      item.createdAt,
+      item.location,
+    ])
+  );
+};
+
 module.exports = {
   getAdminDashboard,
   toggleUserBan,
   removeItem,
+  exportItemsCsv,
 };
