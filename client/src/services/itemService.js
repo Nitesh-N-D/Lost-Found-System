@@ -18,6 +18,7 @@ export const itemService = {
     throw new Error("Unable to load your items right now.");
   },
   getById: (id) => unwrap(api.get(`/items/${id}`)),
+  getMatches: (id) => unwrap(api.get(`/items/${id}/matches`)),
   create: (payload) => unwrap(api.post("/items", payload)),
   remove: (id) => unwrap(api.delete(`/items/${id}`)),
 };
