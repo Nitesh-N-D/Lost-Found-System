@@ -83,7 +83,6 @@ const main = async () => {
     failed = checks.some(([, passed]) => !passed);
   } finally {
     // Remove only notifications whose item pair was created by this run.
-    const createdIds = new Set([idOf(itemA), idOf(itemB)].filter(Boolean));
     for (const [token, ownId, otherId] of [[tokenA, idOf(itemA), idOf(itemB)], [tokenB, idOf(itemB), idOf(itemA)]]) {
       if (!ownId || !otherId) continue;
       try {
