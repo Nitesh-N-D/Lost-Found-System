@@ -158,3 +158,8 @@ Once a claim is approved, the claimant and listing owner can update the shared r
 ### Notification preferences
 
 Open **Dashboard → Settings** and disable **In-app match notifications** to stop receiving new match alerts in the inbox. Ranked possible matches remain visible on your own open reports. Email delivery is not configured and is not advertised as available.
+
+
+### Report search
+
+The public report list supports keyword, lost/found type, category, location, status, and date-range filters. When creating a report, the form checks open listings with the same type/category/location and warns about likely duplicate titles; the user can review the existing listing or continue if it is a different item.
