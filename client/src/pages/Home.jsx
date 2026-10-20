@@ -76,7 +76,12 @@ function Home() {
         if (active) setLoading(false);
       });
 
-    const handleSearch = (event) => {
+  return () => {
+      active = false;
+    };
+  }, [retryCount, appliedFilters]);
+
+  const handleSearch = (event) => {
     event.preventDefault();
     if (searchForm.dateFrom && searchForm.dateTo && searchForm.dateFrom > searchForm.dateTo) {
       setFilterError("Start date must be on or before end date.");
@@ -93,11 +98,6 @@ function Home() {
   };
 
   const hasActiveFilters = Object.values(appliedFilters).some(Boolean);
-
-  return () => {
-      active = false;
-    };
-  }, [retryCount, appliedFilters]);
 
   return (
     <div className="overflow-hidden">
