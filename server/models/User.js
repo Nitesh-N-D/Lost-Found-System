@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    savedItems: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Item",
+    }],
   },
   { timestamps: true }
 );
