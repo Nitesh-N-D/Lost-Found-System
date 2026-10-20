@@ -18,6 +18,9 @@ A full-stack MERN application for reporting lost or found items, submitting owne
 - Chat between owner and claimant
 - Owner contact visibility after approval
 - User dashboard
+- Saved listings per user
+- Rule-based lost/found match suggestions ranked by category, text, location, and date
+- Persistent in-app notifications for possible matches, with read/unread state
 - Admin dashboard
 - SEO-ready frontend metadata
 
