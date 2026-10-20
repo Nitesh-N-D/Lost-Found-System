@@ -16,6 +16,8 @@ const {
 } = require("../controllers/itemController");
 
 const { protect } = require("../middleware/authMiddleware");
+const { submitMatchFeedback } = require("../controllers/matchFeedbackController");
+const { matchFeedbackValidator } = require("../validators/matchFeedbackValidators");
 const {
   createItemValidator,
   updateItemValidator,
@@ -32,6 +34,7 @@ router.post(
   createItem
 );
 router.get("/saved", protect, getSavedItems);
+router.post("/:id/matches/:matchedItemId/feedback", protect, matchFeedbackValidator, validateRequest, submitMatchFeedback);
 router.get("/:id/matches", protect, itemIdValidator, validateRequest, getItemMatches);
 router.put("/:id/save", protect, toggleSavedItem);
 router.get("/me", protect, getMyItems);

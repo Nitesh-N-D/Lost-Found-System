@@ -19,6 +19,7 @@ export const itemService = {
   },
   getById: (id) => unwrap(api.get(`/items/${id}`)),
   getMatches: (id) => unwrap(api.get(`/items/${id}/matches`)),
+  submitMatchFeedback: (id, matchedItemId, feedback) => unwrap(api.post(`/items/${id}/matches/${matchedItemId}/feedback`, { feedback })),
   create: (payload) => unwrap(api.post("/items", payload)),
   remove: (id) => unwrap(api.delete(`/items/${id}`)),
 };

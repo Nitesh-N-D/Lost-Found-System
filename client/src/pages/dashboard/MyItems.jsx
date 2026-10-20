@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Button from "../../components/common/Button";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { itemService } from "../../services/itemService";
@@ -10,6 +11,8 @@ function MyItems() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [matchesByItem, setMatchesByItem] = useState({});
+  const [feedbackByMatch, setFeedbackByMatch] = useState({});
+  const [feedbackBusy, setFeedbackBusy] = useState("");
 
   useEffect(() => {
     itemService
@@ -30,6 +33,20 @@ function MyItems() {
       .catch((error) => { setLoadError(true); toast.error(error.message); })
       .finally(() => setLoading(false));
   }, []);
+
+  const submitFeedback = async (itemId, matchedItemId, feedback) => {
+    const key = itemId + ":" + matchedItemId;
+    try {
+      setFeedbackBusy(key);
+      await itemService.submitMatchFeedback(itemId, matchedItemId, feedback);
+      setFeedbackByMatch((current) => ({ ...current, [key]: feedback }));
+      toast.success("Thanks — your feedback will help improve match suggestions.");
+    } catch (error) {
+      toast.error(error.message || "Feedback could not be saved.");
+    } finally {
+      setFeedbackBusy("");
+    }
+  };
 
   if (loading) return <p className="text-sm text-stone-500">Loading your reports...</p>;
   if (loadError) return <p className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-800">Your reports could not be loaded. Refresh the page to try again.</p>;
@@ -58,6 +75,23 @@ function MyItems() {
                     <span className="shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-900">{match.score}%</span>
                   </Link>
                 ))}
+              </div>
+              <div className="mt-3 space-y-2">
+                {matchesByItem[item._id].map((match) => {
+                  const key = item._id + ":" + match.item._id;
+                  const selectedFeedback = feedbackByMatch[key] || match.feedback;
+                  return (
+                    <div className="flex flex-wrap items-center justify-between gap-2" key={key}>
+                      <span className="text-xs text-stone-600">
+                        {selectedFeedback ? "Feedback saved: " + (selectedFeedback === "helpful" ? "helpful" : "not a match") : "Was this suggestion useful?"}
+                      </span>
+                      <div className="flex gap-2">
+                        <Button className="px-3 py-2 text-xs" disabled={feedbackBusy === key} onClick={() => submitFeedback(item._id, match.item._id, "helpful")} variant={selectedFeedback === "helpful" ? "primary" : "secondary"}>Helpful</Button>
+                        <Button className="px-3 py-2 text-xs" disabled={feedbackBusy === key} onClick={() => submitFeedback(item._id, match.item._id, "not_helpful")} variant={selectedFeedback === "not_helpful" ? "primary" : "secondary"}>Not a match</Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           ) : null}
