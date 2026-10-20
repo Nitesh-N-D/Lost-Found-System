@@ -92,7 +92,7 @@ function DashboardOverview() {
         </section>
 
         <section className="surface-card rounded-[32px] border p-6 md:p-7">
-          <h2 className="text-xl font-semibold text-stone-900">Notifications</h2>
+          <div className="flex items-center justify-between gap-3"><h2 className="text-xl font-semibold text-stone-900">Notifications</h2><Link className="text-sm font-medium text-emerald-900 underline underline-offset-4" to="/dashboard/notifications">View match alerts</Link></div>
           <div className="mt-5 space-y-4">
             {notifications.length ? notifications.map((notification) => (
               <div key={notification.id} className="rounded-[24px] border border-stone-200 bg-stone-50 p-4">
