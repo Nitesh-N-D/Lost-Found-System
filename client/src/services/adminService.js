@@ -5,4 +5,6 @@ export const adminService = {
   banUser: (id) => unwrap(api.put(`/admin/users/${id}/ban`)),
   unbanUser: (id) => unwrap(api.put(`/admin/users/${id}/unban`)),
   deleteItem: (id) => unwrap(api.delete(`/admin/items/${id}`)),
+  updateReportStatus: (id, status) =>
+    unwrap(api.put(`/admin/reports/${id}`, { status })),
 };

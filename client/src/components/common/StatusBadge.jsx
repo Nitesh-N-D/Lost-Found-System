@@ -7,6 +7,8 @@ const styles = {
   pending: "bg-sky-50 text-sky-800",
   approved: "bg-emerald-50 text-emerald-800",
   rejected: "bg-rose-50 text-rose-800",
+  reviewed: "bg-sky-50 text-sky-800",
+  dismissed: "bg-stone-100 text-stone-700",
 };
 
 function StatusBadge({ status }) {

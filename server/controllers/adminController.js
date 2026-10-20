@@ -1,6 +1,7 @@
 const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/apiResponse");
 const adminService = require("../services/adminService");
+const itemReportService = require("../services/itemReportService");
 
 exports.getAdminDashboard = asyncHandler(async (_req, res) => {
   const dashboard = await adminService.getAdminDashboard();
@@ -20,4 +21,12 @@ exports.unbanUser = asyncHandler(async (req, res) => {
 exports.deleteItem = asyncHandler(async (req, res) => {
   await adminService.removeItem(req.params.id);
   sendResponse(res, 200, "Item deleted successfully");
+});
+
+exports.updateItemReportStatus = asyncHandler(async (req, res) => {
+  const report = await itemReportService.updateItemReportStatus(
+    req.params.id,
+    req.body.status
+  );
+  sendResponse(res, 200, "Listing report status updated successfully.", report);
 });
