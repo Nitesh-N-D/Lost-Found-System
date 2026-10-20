@@ -31,3 +31,43 @@ exports.deleteItem = asyncHandler(async (req, res) => {
   await itemService.deleteItem(req.params.id, req.user);
   sendResponse(res, 200, "Item deleted successfully");
 });
+
+
+exports.getSavedItems = asyncHandler(async (req, res) => {
+  const User = require("../models/User");
+  const user = await User.findById(req.user._id).populate({
+    path: "savedItems",
+    populate: { path: "reportedBy", select: "name" },
+  });
+  const items = (user?.savedItems || []).filter(Boolean);
+  sendResponse(res, 200, "Saved items fetched successfully", items);
+});
+
+exports.toggleSavedItem = asyncHandler(async (req, res) => {
+  const mongoose = require("mongoose");
+  const Item = require("../models/Item");
+  const User = require("../models/User");
+  const AppError = require("../utils/AppError");
+  const itemId = req.params.id;
+
+  if (!mongoose.isValidObjectId(itemId)) {
+    throw new AppError("Invalid item id", 400);
+  }
+
+  const item = await Item.findById(itemId);
+  if (!item) throw new AppError("Item not found", 404);
+
+  const user = await User.findById(req.user._id);
+  const alreadySaved = user.savedItems.some((savedId) => String(savedId) === String(itemId));
+  if (alreadySaved) {
+    user.savedItems.pull(itemId);
+  } else {
+    user.savedItems.addToSet(itemId);
+  }
+  await user.save();
+
+  sendResponse(res, 200, alreadySaved ? "Item removed from saved listings" : "Item saved successfully", {
+    itemId,
+    saved: !alreadySaved,
+  });
+});
