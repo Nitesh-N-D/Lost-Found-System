@@ -6,6 +6,7 @@ const {
   unbanUser,
   deleteItem,
   updateItemReportStatus,
+  exportItemsCsv,
 } = require("../controllers/adminController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 const validateRequest = require("../middleware/validateRequest");
@@ -20,6 +21,7 @@ const reportStatusValidator = [
 ];
 
 router.get("/dashboard", protect, adminOnly, getAdminDashboard);
+router.get("/items/export.csv", protect, adminOnly, exportItemsCsv);
 router.put("/users/:id/ban", protect, adminOnly, idValidator, validateRequest, banUser);
 router.put(
   "/users/:id/unban",
