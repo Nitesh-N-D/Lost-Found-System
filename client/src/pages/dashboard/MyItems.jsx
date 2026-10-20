@@ -79,7 +79,7 @@ function MyItems() {
               <div className="mt-3 space-y-2">
                 {matchesByItem[item._id].map((match) => {
                   const key = item._id + ":" + match.item._id;
-                  const selectedFeedback = feedbackByMatch[key];
+                  const selectedFeedback = feedbackByMatch[key] || match.feedback;
                   return (
                     <div className="flex flex-wrap items-center justify-between gap-2" key={key}>
                       <span className="text-xs text-stone-600">
