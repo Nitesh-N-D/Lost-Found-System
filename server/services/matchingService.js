@@ -1,5 +1,6 @@
 const Item = require("../models/Item");
 const Notification = require("../models/Notification");
+const User = require("../models/User");
 const AppError = require("../utils/AppError");
 const { scoreItemMatch } = require("../utils/matchingScore");
 
@@ -39,6 +40,13 @@ const notifyPotentialMatches = async (item) => {
     reportedBy: { $ne: item.reportedBy },
   }).sort({ createdAt: -1 }).limit(250);
 
+  const reporterIds = [...new Set([String(item.reportedBy), ...candidates.map((candidate) => String(candidate.reportedBy))])];
+  const users = await User.find({ _id: { $in: reporterIds } }).select("notificationPreferences");
+  const preferencesByUser = new Map(users.map((user) => [
+    String(user._id),
+    user.notificationPreferences || { inAppMatches: true },
+  ]));
+
   const writes = [];
   for (const candidate of candidates) {
     const score = scoreItemMatch(item, candidate);
@@ -70,6 +78,7 @@ const notifyPotentialMatches = async (item) => {
     ];
 
     for (const notification of notifications) {
+      if (preferencesByUser.get(notification.user)?.inAppMatches === false) continue;
       writes.push({
         updateOne: {
           filter: {
