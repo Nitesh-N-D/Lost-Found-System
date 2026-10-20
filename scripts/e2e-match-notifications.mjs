@@ -7,7 +7,7 @@ if (!apiBase || !accountA.email || !accountA.password || !accountB.email || !acc
   process.exit(2);
 }
 if (apiBase.includes("lost-found-system-8q05.onrender.com") && process.env.E2E_ALLOW_PRODUCTION_WRITES !== "1") {
-  console.error("Refusing to create test listings on production. Use an isolated staging deployment or set E2E_ALLOW_PRODUCTION_WRITES=1 after reviewing the impact.");
+  console.error("Refusing to create test listings on production. Use an isolated staging deployment, or explicitly set E2E_ALLOW_PRODUCTION_WRITES=1 after reviewing the impact.");
   process.exit(2);
 }
 
@@ -82,6 +82,22 @@ const main = async () => {
     for (const [label, passed] of checks) console.log(`${passed ? "PASS" : "FAIL"} ${label}`);
     failed = checks.some(([, passed]) => !passed);
   } finally {
+    // Remove only notifications whose item pair was created by this run.
+    const createdIds = new Set([idOf(itemA), idOf(itemB)].filter(Boolean));
+    for (const [token, ownId, otherId] of [[tokenA, idOf(itemA), idOf(itemB)], [tokenB, idOf(itemB), idOf(itemA)]]) {
+      if (!ownId || !otherId) continue;
+      try {
+        const inbox = await request("/api/notifications?limit=50", { token });
+        for (const notification of inbox.notifications || []) {
+          if (idOf(notification.item) === ownId && idOf(notification.matchedItem) === otherId) {
+            await request(`/api/notifications/${idOf(notification) }`, { token, method: "DELETE" });
+          }
+        }
+      } catch (error) {
+        failed = true;
+        console.error(`Cleanup failed for test notifications: ${error.message}`);
+      }
+    }
     // Always attempt to remove only the two reports created by this run.
     for (const [id, token] of [[idOf(itemA), tokenA], [idOf(itemB), tokenB]]) {
       if (!id || id === "[object Object]") continue;
@@ -92,12 +108,6 @@ const main = async () => {
         console.error(`Cleanup failed for test item ${id}: ${error.message}`);
       }
     }
-    await Promise.all([tokenA, tokenB].map((token) =>
-      request("/api/notifications/read-all", { token, method: "PATCH" }).catch((error) => {
-        failed = true;
-        console.error(`Could not mark test notifications read: ${error.message}`);
-      })
-    ));
   }
   if (failed) process.exitCode = 1;
 };
