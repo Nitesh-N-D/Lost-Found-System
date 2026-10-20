@@ -10,6 +10,7 @@ function SettingsPage() {
     name: user?.name || "",
     phone: user?.phone || "",
     bio: user?.bio || "",
+    inAppMatches: user?.notificationPreferences?.inAppMatches !== false,
   });
   const [saving, setSaving] = useState(false);
 
@@ -17,7 +18,12 @@ function SettingsPage() {
     event.preventDefault();
     try {
       setSaving(true);
-      const profile = await authService.updateProfile(form);
+      const profile = await authService.updateProfile({
+        name: form.name,
+        phone: form.phone,
+        bio: form.bio,
+        notificationPreferences: { inAppMatches: form.inAppMatches },
+      });
       updateUser(profile);
       toast.success("Profile updated.");
     } catch (error) {
@@ -49,6 +55,18 @@ function SettingsPage() {
           placeholder="Short bio"
           value={form.bio}
         />
+        <label className="flex items-start gap-3 rounded-2xl border border-stone-200 p-4 text-sm text-stone-700">
+          <input
+            checked={form.inAppMatches}
+            className="mt-1"
+            onChange={(event) => setForm((current) => ({ ...current, inAppMatches: event.target.checked }))}
+            type="checkbox"
+          />
+          <span>
+            <span className="block font-semibold text-stone-900">In-app match notifications</span>
+            <span className="mt-1 block leading-6 text-stone-500">Show an inbox alert when a new report may match one of your open reports.</span>
+          </span>
+        </label>
         <Button disabled={saving} type="submit">
           {saving ? "Saving..." : "Save changes"}
         </Button>

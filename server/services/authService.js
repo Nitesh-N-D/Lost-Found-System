@@ -19,6 +19,7 @@ const buildAuthPayload = (user) => ({
   role: user.role,
   phone: user.phone,
   bio: user.bio,
+  notificationPreferences: user.notificationPreferences || { inAppMatches: true },
   isBanned: user.isBanned,
   token: generateToken(user._id),
 });
@@ -69,6 +70,9 @@ const updateProfile = async (userId, payload) => {
   const safePayload = Object.fromEntries(
     Object.entries(payload).filter(([key]) => allowedFields.includes(key))
   );
+  if (payload.notificationPreferences && typeof payload.notificationPreferences.inAppMatches === "boolean") {
+    safePayload.notificationPreferences = { inAppMatches: payload.notificationPreferences.inAppMatches };
+  }
 
   const user = await User.findByIdAndUpdate(
     userId,
@@ -87,6 +91,7 @@ const updateProfile = async (userId, payload) => {
     role: user.role,
     phone: user.phone,
     bio: user.bio,
+    notificationPreferences: user.notificationPreferences || { inAppMatches: true },
     isBanned: user.isBanned,
   };
 };
