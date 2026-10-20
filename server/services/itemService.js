@@ -3,6 +3,7 @@ const Item = require("../models/Item");
 const Claim = require("../models/Claim");
 const Chat = require("../models/Chat");
 const MatchFeedback = require("../models/MatchFeedback");
+const Notification = require("../models/Notification");
 const cloudinary = require("../config/cloudinary");
 const AppError = require("../utils/AppError");
 const matchingService = require("./matchingService");
@@ -177,6 +178,7 @@ const deleteItem = async (id, user) => {
     Claim.deleteMany({ item: item._id }),
     Chat.deleteMany({ item: item._id }),
     MatchFeedback.deleteMany({ $or: [{ item: item._id }, { matchedItem: item._id }] }),
+    Notification.deleteMany({ $or: [{ item: item._id }, { matchedItem: item._id }] }),
   ]);
   await item.deleteOne();
 
