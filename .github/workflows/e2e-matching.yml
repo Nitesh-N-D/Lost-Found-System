@@ -1,0 +1,39 @@
+name: Matching end-to-end smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matching:
+    name: Two-account match and notification check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify required configuration
+        env:
+          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+          E2E_USER_A_EMAIL: ${{ secrets.E2E_USER_A_EMAIL }}
+          E2E_USER_A_PASSWORD: ${{ secrets.E2E_USER_A_PASSWORD }}
+          E2E_USER_B_EMAIL: ${{ secrets.E2E_USER_B_EMAIL }}
+          E2E_USER_B_PASSWORD: ${{ secrets.E2E_USER_B_PASSWORD }}
+        run: |
+          test -n "$E2E_BASE_URL" || (echo "Configure repository variable E2E_BASE_URL with the staging API base URL." && exit 1)
+          test -n "$E2E_USER_A_EMAIL" || (echo "Configure E2E_USER_A_EMAIL in repository secrets." && exit 1)
+          test -n "$E2E_USER_A_PASSWORD" || (echo "Configure E2E_USER_A_PASSWORD in repository secrets." && exit 1)
+          test -n "$E2E_USER_B_EMAIL" || (echo "Configure E2E_USER_B_EMAIL in repository secrets." && exit 1)
+          test -n "$E2E_USER_B_PASSWORD" || (echo "Configure E2E_USER_B_PASSWORD in repository secrets." && exit 1)
+      - name: Verify reciprocal matches and notifications
+        env:
+          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+          E2E_USER_A_EMAIL: ${{ secrets.E2E_USER_A_EMAIL }}
+          E2E_USER_A_PASSWORD: ${{ secrets.E2E_USER_A_PASSWORD }}
+          E2E_USER_B_EMAIL: ${{ secrets.E2E_USER_B_EMAIL }}
+          E2E_USER_B_PASSWORD: ${{ secrets.E2E_USER_B_PASSWORD }}
+        run: node scripts/e2e-match-notifications.mjs

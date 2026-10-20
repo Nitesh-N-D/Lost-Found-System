@@ -168,3 +168,8 @@ The public report list supports keyword, lost/found type, category, location, st
 ### Admin analytics and export
 
 Administrators can review aggregate counts by report type, top categories, claim status, and monthly report volume from the admin dashboard. The **Export items CSV** action is restricted to admins and exports up to 10,000 items with title, type, category, status, item date, creation date, and location; it deliberately excludes account emails and claimant details.
+
+
+### Running the two-account matching check
+
+Use an isolated staging API and two dedicated test accounts. In GitHub repository **Settings → Secrets and variables → Actions**, add repository variable `E2E_BASE_URL` (the staging API base URL including `/api`) and secrets `E2E_USER_A_EMAIL`, `E2E_USER_A_PASSWORD`, `E2E_USER_B_EMAIL`, and `E2E_USER_B_PASSWORD`. Then open **Actions → Matching end-to-end smoke test → Run workflow**. The script creates one temporary lost report and one temporary found report, checks both reciprocal matches and inbox notifications, and attempts to remove only the records created by that run. Keep this workflow pointed at staging; do not configure it with personal accounts.
