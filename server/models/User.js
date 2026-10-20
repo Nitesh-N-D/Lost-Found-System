@@ -39,6 +39,9 @@ const userSchema = new mongoose.Schema(
       default: "",
       maxlength: 220,
     },
+    notificationPreferences: {
+      inAppMatches: { type: Boolean, default: true },
+    },
     isBanned: {
       type: Boolean,
       default: false,
