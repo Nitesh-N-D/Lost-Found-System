@@ -30,3 +30,11 @@ exports.updateItemReportStatus = asyncHandler(async (req, res) => {
   );
   sendResponse(res, 200, "Listing report status updated successfully.", report);
 });
+
+exports.exportItemsCsv = asyncHandler(async (_req, res) => {
+  const csv = await adminService.exportItemsCsv();
+  const date = new Date().toISOString().slice(0, 10);
+  res.set("Content-Type", "text/csv; charset=utf-8");
+  res.set("Content-Disposition", `attachment; filename="lost-found-items-${date}.csv"`);
+  res.status(200).send(csv);
+});
