@@ -1,6 +1,7 @@
 const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/apiResponse");
 const claimService = require("../services/claimService");
+const recoveryService = require("../services/recoveryService");
 
 exports.createClaim = asyncHandler(async (req, res) => {
   const claim = await claimService.createClaim(
@@ -28,4 +29,9 @@ exports.updateClaimStatus = asyncHandler(async (req, res) => {
     req.body.status
   );
   sendResponse(res, 200, "Claim updated successfully", claim);
+});
+
+exports.updateRecoveryStatus = asyncHandler(async (req, res) => {
+  const claim = await recoveryService.updateRecoveryStatus(req.params.id, req.user, req.body);
+  sendResponse(res, 200, "Recovery progress updated", claim);
 });
