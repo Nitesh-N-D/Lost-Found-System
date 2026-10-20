@@ -59,6 +59,8 @@ function Home() {
 
   useEffect(() => {
     let active = true;
+    setLoading(true);
+    setItemsError(false);
 
     const params = Object.fromEntries(Object.entries(appliedFilters).filter(([, value]) => value !== ""));
     itemService
