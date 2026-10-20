@@ -153,3 +153,8 @@ The script creates one lost and one found test report, verifies each account can
 ### Recovery tracking
 
 Once a claim is approved, the claimant and listing owner can update the shared recovery state (not started, handoff arranged, recovered, or disputed) from their dashboard claim views. Progress notes and a change history are visible only through the claimant's and listing owner's authenticated claim views. A recovery status is a record of participant-reported progress, not independent proof that an item was returned.
+
+
+### Notification preferences
+
+Open **Dashboard → Settings** and disable **In-app match notifications** to stop receiving new match alerts in the inbox. Ranked possible matches remain visible on your own open reports. Email delivery is not configured and is not advertised as available.
