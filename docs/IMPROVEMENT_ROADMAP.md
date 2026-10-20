@@ -25,7 +25,7 @@ Exit criteria: checks are repeatable; sensitive claim/contact information is not
 - [x] Add authenticated notification inbox and read/unread state.
 - [x] Test match scoring with Node's built-in test runner.
 - [x] Add user-facing match suggestions to each owner's open report.
-- [ ] Add notification preferences and optional email delivery.
+- [ ] Add optional email delivery (in-app match notification preference is implemented; email requires a configured provider).
 - [x] Collect opt-in helpful/not-a-match feedback for suggested matches before considering ML or image similarity.
 
 Design note: match scores are heuristic suggestions, not proof of ownership. Users must verify distinctive details through the claim workflow.
@@ -76,4 +76,5 @@ The first delivery adds rule-based matching, persistent match notifications, not
 - Added authenticated notification dismissal, restricted to the signed-in user's own notification.
 - Added opt-in helpful/not-a-match feedback for suggestions, scoped to the reporter and only accepted for a currently suggested match; saved feedback is returned with the match list and removed when either report is deleted.
 - Added recovery progress for approved claims, including handoff arranged/recovered/disputed states, private participant notes, and an audit history. Full dispute escalation and notification to admins remain future work.
+- Added a profile setting to opt out of in-app match alerts while keeping ranked suggestions available on the user's reports; email alerts remain unconfigured.
 - Remaining verification gate: run the two-account harness against an isolated staging deployment with dedicated test accounts before treating live end-to-end matching as verified.
