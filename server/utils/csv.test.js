@@ -10,3 +10,8 @@ test("quotes CSV values and escapes embedded quotes, commas, and line breaks", (
 test("serializes null values as empty cells", () => {
   assert.equal(toCsv(["title"], [[null]]), '"title"\r\n""\r\n');
 });
+
+test("neutralizes spreadsheet formula prefixes in user-controlled cells", () => {
+  const csv = toCsv(["title"], [["=HYPERLINK(\"https://example.com\")"], ["+cmd"], ["-cmd"], ["@SUM(A1:A2)"]]);
+  assert.equal(csv, '"title"\r\n"\'=HYPERLINK(""https://example.com"")"\r\n"\'+cmd"\r\n"\'-cmd"\r\n"\'@SUM(A1:A2)"\r\n');
+});
