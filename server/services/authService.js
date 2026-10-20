@@ -91,6 +91,7 @@ const updateProfile = async (userId, payload) => {
     role: user.role,
     phone: user.phone,
     bio: user.bio,
+    notificationPreferences: user.notificationPreferences || { inAppMatches: true },
     isBanned: user.isBanned,
   };
 };
