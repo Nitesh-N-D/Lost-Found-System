@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const Item = require("../models/Item");
 const Notification = require("../models/Notification");
+const User = require("../models/User");
 const matchingService = require("./matchingService");
 
 const lost = {
@@ -32,7 +33,19 @@ const queryFor = (items) => ({
   limit() { return Promise.resolve(items); },
 });
 
+const mockUserPreferences = (t, overrides = {}) => {
+  const originalFind = User.find;
+  User.find = () => ({
+    select: () => Promise.resolve(["user-a", "user-b"].map((id) => ({
+      _id: id,
+      notificationPreferences: { inAppMatches: overrides[id] !== false },
+    }))),
+  });
+  t.after(() => { User.find = originalFind; });
+};
+
 test("notifies both reporters for a qualifying opposite-type match", async (t) => {
+  mockUserPreferences(t);
   const originalFind = Item.find;
   const originalBulkWrite = Notification.bulkWrite;
   let capturedFilter;
@@ -70,6 +83,7 @@ test("notifies both reporters for a qualifying opposite-type match", async (t) =
 });
 
 test("does not write notifications for weak matches", async (t) => {
+  mockUserPreferences(t);
   const originalFind = Item.find;
   const originalBulkWrite = Notification.bulkWrite;
   Item.find = () => queryFor([{
@@ -92,6 +106,7 @@ test("does not write notifications for weak matches", async (t) => {
 });
 
 test("uses idempotent upserts so repeated matching does not create duplicate alerts", async (t) => {
+  mockUserPreferences(t);
   const originalFind = Item.find;
   const originalBulkWrite = Notification.bulkWrite;
   let operations;
@@ -114,4 +129,22 @@ test("uses idempotent upserts so repeated matching does not create duplicate ale
     assert.ok(updateOne.update.$setOnInsert);
     assert.equal(updateOne.filter.type, "potential_match");
   }
+});
+
+test("respects per-user opt-out while notifying the other reporter", async (t) => {
+  mockUserPreferences(t, { "user-a": false });
+  const originalFind = Item.find;
+  const originalBulkWrite = Notification.bulkWrite;
+  let operations = [];
+  Item.find = () => queryFor([found]);
+  Notification.bulkWrite = async (writes) => { operations = writes; return {}; };
+  t.after(() => {
+    Item.find = originalFind;
+    Notification.bulkWrite = originalBulkWrite;
+  });
+
+  await matchingService.notifyPotentialMatches(lost);
+
+  assert.equal(operations.length, 1);
+  assert.equal(operations[0].updateOne.filter.user, "user-b");
 });
