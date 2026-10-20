@@ -89,7 +89,7 @@ const main = async () => {
         const inbox = await request("/api/notifications?limit=50", { token });
         for (const notification of inbox.notifications || []) {
           if (idOf(notification.item) === ownId && idOf(notification.matchedItem) === otherId) {
-            await request(`/api/notifications/${idOf(notification) }`, { token, method: "DELETE" });
+            await request(`/api/notifications/${idOf(notification)}`, { token, method: "DELETE" });
           }
         }
       } catch (error) {
