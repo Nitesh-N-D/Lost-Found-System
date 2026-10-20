@@ -27,7 +27,7 @@ jobs:
       - run: npm test
       - name: Check JavaScript syntax
         run: |
-          find . -name '*.js' -not -path './node_modules/*' -exec node --check {} \\;
+          find . -name '*.js' -not -path './node_modules/*' -exec node --check {} \;
           node --check ../scripts/e2e-match-notifications.mjs
 
   frontend:
