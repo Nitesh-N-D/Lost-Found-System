@@ -22,6 +22,8 @@ function CreateItem() {
   const [form, setForm] = useState(initialForm);
   const [image, setImage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [duplicateCandidate, setDuplicateCandidate] = useState(null);
+  const [pendingForm, setPendingForm] = useState(null);
 
   usePageMeta({
     title: "Report an item | Lost & Found",
@@ -33,6 +35,46 @@ function CreateItem() {
   useEffect(() => () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
   }, [previewUrl]);
+
+  const updateField = (name, value) => {
+    setForm((current) => ({ ...current, [name]: value }));
+    setDuplicateCandidate(null);
+    setPendingForm(null);
+  };
+
+  const publishItem = async (normalizedForm) => {
+    setSubmitting(true);
+    try {
+      const result = await itemService.list({
+        type: normalizedForm.type,
+        category: normalizedForm.category,
+        location: normalizedForm.location,
+        status: "open",
+        limit: 24,
+      });
+      const words = (value) => new Set(String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().split(/\s+/).filter(Boolean));
+      const similarity = (left, right) => {
+        const a = words(left);
+        const b = words(right);
+        if (!a.size || !b.size) return 0;
+        return [...a].filter((word) => b.has(word)).length / Math.max(a.size, b.size);
+      };
+      const duplicate = (result?.items || []).find((item) =>
+        item.type === normalizedForm.type && similarity(item.title, normalizedForm.title) >= 0.55
+      );
+      if (duplicate) {
+        setDuplicateCandidate(duplicate);
+        setPendingForm(normalizedForm);
+        return;
+      }
+    } catch {
+      toast("Similar reports could not be checked. You can still publish your report.");
+    } finally {
+      setSubmitting(false);
+    }
+
+    await publishItem(normalizedForm);
+  };
 
   const handleImageChange = (event) => {
     const selectedFile = event.target.files?.[0] || null;
@@ -116,7 +158,7 @@ function CreateItem() {
                 maxLength={field.maxLength}
                 minLength={field.minLength}
                 name={field.name}
-                onChange={(event) => setForm((current) => ({ ...current, [field.name]: event.target.value }))}
+                onChange={(event) => updateField(field.name, event.target.value)}
                 required
                 type={field.type}
                 value={form[field.name]}
@@ -126,7 +168,7 @@ function CreateItem() {
 
           <label className="space-y-2">
             <span className="text-sm text-stone-500">Type</span>
-            <select className="form-control w-full rounded-[16px] border px-4 py-3 outline-none" name="type" onChange={(event) => setForm((current) => ({ ...current, type: event.target.value }))} value={form.type}>
+            <select className="form-control w-full rounded-[16px] border px-4 py-3 outline-none" name="type" onChange={(event) => updateField("type", event.target.value)} value={form.type}>
               <option value="lost">Lost</option>
               <option value="found">Found</option>
             </select>
@@ -148,16 +190,35 @@ function CreateItem() {
               maxLength={1000}
               minLength={10}
               name="description"
-              onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+              onChange={(event) => updateField("description", event.target.value)}
               required
               value={form.description}
             />
             <span className="text-xs text-stone-500">{form.description.length}/1000 characters</span>
           </label>
 
+          {duplicateCandidate ? (
+            <div className="md:col-span-2 rounded-2xl border border-amber-300 bg-amber-50 p-4" role="alert">
+              <p className="font-semibold text-stone-900">A similar open report may already exist</p>
+              <p className="mt-1 text-sm leading-6 text-stone-700">
+                “{duplicateCandidate.title}” is listed as a {duplicateCandidate.type} report in {duplicateCandidate.location}. This is only a warning; the reports may refer to different items.
+              </p>
+              <Link className="mt-2 inline-flex text-sm font-semibold text-emerald-900 underline underline-offset-4" rel="noreferrer" target="_blank" to={"/items/" + duplicateCandidate._id}>
+                Review existing report
+              </Link>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button disabled={submitting} onClick={() => { const formToPublish = pendingForm; setDuplicateCandidate(null); setPendingForm(null); if (formToPublish) publishItem(formToPublish); }} type="button">
+                  Publish anyway
+                </Button>
+                <Button onClick={() => { setDuplicateCandidate(null); setPendingForm(null); }} type="button" variant="secondary">
+                  Edit report
+                </Button>
+              </div>
+            </div>
+          ) : null}
           <div className="md:col-span-2">
             <Button className="w-full justify-center" disabled={submitting} type="submit">
-              {submitting ? "Publishing item..." : "Publish item"}
+              {submitting ? "Checking for similar reports..." : "Publish item"}
             </Button>
           </div>
         </form>
