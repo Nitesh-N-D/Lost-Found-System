@@ -8,7 +8,7 @@ Help people report items, discover likely matches, verify ownership safely, and 
 
 ## P0 — Reliability and safety
 
-- [ ] Run client lint/build and backend syntax/test checks in CI.
+- [x] Run client lint/build and backend syntax/test checks in CI.
 - [ ] Verify production API behavior for registration, listing creation, claims, chat, reports, and saved listings.
 - [ ] Add request-level tests for authentication, authorization, validation, and error responses.
 - [ ] Review dependency and secret hygiene; keep credentials outside the repository.
@@ -24,9 +24,9 @@ Exit criteria: checks are repeatable; sensitive claim/contact information is not
 - [x] Persist in-app notifications for possible matches.
 - [x] Add authenticated notification inbox and read/unread state.
 - [x] Test match scoring with Node's built-in test runner.
-- [ ] Add user-facing match suggestions to each owner's open report.
+- [x] Add user-facing match suggestions to each owner's open report.
 - [ ] Add notification preferences and optional email delivery.
-- [ ] Measure match precision with opt-in feedback before considering ML or image similarity.
+- [x] Collect opt-in helpful/not-a-match feedback for suggested matches before considering ML or image similarity.
 
 Design note: match scores are heuristic suggestions, not proof of ownership. Users must verify distinctive details through the claim workflow.
 
@@ -74,4 +74,5 @@ The first delivery adds rule-based matching, persistent match notifications, not
 - Added automated service-level checks that the matching workflow creates reciprocal notifications for both reporters, suppresses weak matches, and uses idempotent upserts.
 - Added an opt-in two-account API test harness that verifies reciprocal match results and persisted notifications and attempts to clean up its own test artifacts. It requires dedicated test accounts; it is not executed against production automatically.
 - Added authenticated notification dismissal, restricted to the signed-in user's own notification.
+- Added opt-in helpful/not-a-match feedback for suggestions, scoped to the reporter and only accepted for a currently suggested match; saved feedback is returned with the match list and removed when either report is deleted.
 - Remaining verification gate: run the two-account harness against an isolated staging deployment with dedicated test accounts before treating live end-to-end matching as verified.
