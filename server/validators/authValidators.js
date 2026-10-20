@@ -30,6 +30,7 @@ const loginValidator = [
 ];
 
 const updateProfileValidator = [
+  body("notificationPreferences.inAppMatches").optional().isBoolean().withMessage("In-app match preference must be a boolean"),
   body("name").optional().trim()
     .isLength({ min: 2, max: 60 })
     .withMessage("Name must be between 2 and 60 characters"),
