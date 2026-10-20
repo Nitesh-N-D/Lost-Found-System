@@ -18,6 +18,7 @@ function AdminPanel() {
   const [updatingUserId, setUpdatingUserId] = useState(null);
   const [deletingItemId, setDeletingItemId] = useState(null);
   const [updatingReportId, setUpdatingReportId] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   const loadDashboard = async () => {
     try {
@@ -44,6 +45,26 @@ function AdminPanel() {
     };
   }, []);
 
+  const exportItems = async () => {
+    try {
+      setExporting(true);
+      const response = await adminService.exportItemsCsv();
+      const url = window.URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "lost-found-items-" + new Date().toISOString().slice(0, 10) + ".csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("Privacy-aware CSV export downloaded.");
+    } catch (error) {
+      toast.error(error.message || "The CSV export could not be downloaded.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const updateReport = async (reportId, status) => {
     try {
       setUpdatingReportId(reportId);
@@ -61,6 +82,15 @@ function AdminPanel() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold text-stone-900">Admin analytics</h1>
+          <p className="mt-2 text-sm text-stone-600">Aggregate trends and privacy-aware exports for operations.</p>
+        </div>
+        <Button disabled={exporting} onClick={exportItems} variant="secondary">
+          {exporting ? "Preparing CSV..." : "Export items CSV"}
+        </Button>
+      </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {[
           ["Total users", dashboard.stats?.totalUsers ?? 0],
@@ -74,6 +104,38 @@ function AdminPanel() {
           </div>
         ))}
       </div>
+
+      <section className="mt-8">
+        <h2 className="mb-4 text-2xl font-semibold text-stone-900">Activity trends</h2>
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {[
+            ["Items by type", dashboard.analytics?.itemsByType || []],
+            ["Top categories", dashboard.analytics?.itemsByCategory || []],
+            ["Claims by status", dashboard.analytics?.claimsByStatus || []],
+            ["Monthly item reports", dashboard.analytics?.monthlyItems || []],
+          ].map(([title, rows]) => {
+            const maximum = Math.max(1, ...rows.map((row) => row.count || 0));
+            return (
+              <section className="rounded-[28px] border border-stone-200 bg-white p-5" key={title}>
+                <h3 className="font-semibold text-stone-900">{title}</h3>
+                <div className="mt-4 space-y-3">
+                  {rows.length ? rows.map((row) => (
+                    <div key={row._id || "unknown"}>
+                      <div className="flex items-center justify-between gap-3 text-xs">
+                        <span className="truncate text-stone-600">{row._id || "Unknown"}</span>
+                        <span className="font-semibold tabular-nums text-stone-900">{row.count}</span>
+                      </div>
+                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-stone-100">
+                        <div className="h-full rounded-full bg-emerald-700" style={{ width: (Math.max(0, row.count || 0) / maximum * 100) + "%" }} />
+                      </div>
+                    </div>
+                  )) : <p className="text-sm text-stone-500">No data yet.</p>}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
         <section className="rounded-[32px] border border-stone-200 bg-white p-6">
