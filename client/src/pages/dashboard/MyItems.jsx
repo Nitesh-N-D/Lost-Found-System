@@ -76,6 +76,23 @@ function MyItems() {
                   </Link>
                 ))}
               </div>
+              <div className="mt-3 space-y-2">
+                {matchesByItem[item._id].map((match) => {
+                  const key = item._id + ":" + match.item._id;
+                  const selectedFeedback = feedbackByMatch[key];
+                  return (
+                    <div className="flex flex-wrap items-center justify-between gap-2" key={key}>
+                      <span className="text-xs text-stone-600">
+                        {selectedFeedback ? "Feedback saved: " + (selectedFeedback === "helpful" ? "helpful" : "not a match") : "Was this suggestion useful?"}
+                      </span>
+                      <div className="flex gap-2">
+                        <Button className="px-3 py-2 text-xs" disabled={feedbackBusy === key} onClick={() => submitFeedback(item._id, match.item._id, "helpful")} variant={selectedFeedback === "helpful" ? "primary" : "secondary"}>Helpful</Button>
+                        <Button className="px-3 py-2 text-xs" disabled={feedbackBusy === key} onClick={() => submitFeedback(item._id, match.item._id, "not_helpful")} variant={selectedFeedback === "not_helpful" ? "primary" : "secondary"}>Not a match</Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </section>
           ) : null}
         </div>
