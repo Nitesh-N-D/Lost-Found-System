@@ -67,3 +67,11 @@ Design note: match scores are heuristic suggestions, not proof of ownership. Use
 ## Current implementation
 
 The first delivery adds rule-based matching, persistent match notifications, notification read state, and a testable matching score. Remaining unchecked items are follow-up releases, not claims that they are already implemented.
+
+
+## Follow-up hardening release (in progress)
+
+- Added automated service-level checks that the matching workflow creates reciprocal notifications for both reporters, suppresses weak matches, and uses idempotent upserts.
+- Added an opt-in two-account API test harness that verifies reciprocal match results and persisted notifications and attempts to clean up its own test artifacts. It requires dedicated test accounts; it is not executed against production automatically.
+- Added authenticated notification dismissal, restricted to the signed-in user's own notification.
+- Remaining verification gate: run the two-account harness against an isolated staging deployment with dedicated test accounts before treating live end-to-end matching as verified.
