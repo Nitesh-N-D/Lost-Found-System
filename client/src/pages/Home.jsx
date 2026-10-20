@@ -10,6 +10,8 @@ import { Icon } from "../components/common/Icons";
 import icons from "../components/common/iconPaths";
 import Footer from "../components/common/Footer";
 
+const emptyFilters = { keyword: "", type: "", category: "", location: "", dateFrom: "", dateTo: "", status: "" };
+
 const features = [
   {
     title: "Item reporting",
@@ -45,6 +47,9 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [itemsError, setItemsError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [searchForm, setSearchForm] = useState(emptyFilters);
+  const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
+  const [filterError, setFilterError] = useState("");
 
   usePageMeta({
     title: "Lost & Found System | Secure item recovery workflow",
@@ -55,8 +60,9 @@ function Home() {
   useEffect(() => {
     let active = true;
 
+    const params = Object.fromEntries(Object.entries(appliedFilters).filter(([, value]) => value !== ""));
     itemService
-      .list({ limit: 6 })
+      .list({ ...params, limit: Object.values(appliedFilters).some(Boolean) ? 24 : 6 })
       .then((data) => {
         if (active) setItems(Array.isArray(data?.items) ? data.items : []);
       })
@@ -70,10 +76,32 @@ function Home() {
         if (active) setLoading(false);
       });
 
-    return () => {
+  return () => {
       active = false;
     };
-  }, [retryCount]);
+  }, [retryCount, appliedFilters]);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    if (searchForm.dateFrom && searchForm.dateTo && searchForm.dateFrom > searchForm.dateTo) {
+      setFilterError("Start date must be on or before end date.");
+      return;
+    }
+    setFilterError("");
+    setLoading(true);
+    setItemsError(false);
+    setAppliedFilters({ ...searchForm });
+  };
+
+  const resetSearch = () => {
+    setSearchForm(emptyFilters);
+    setLoading(true);
+    setItemsError(false);
+    setAppliedFilters(emptyFilters);
+    setFilterError("");
+  };
+
+  const hasActiveFilters = Object.values(appliedFilters).some(Boolean);
 
   return (
     <div className="overflow-hidden">
@@ -220,6 +248,52 @@ function Home() {
             View all items
           </Link>
         </div>
+        <form className="mt-8 rounded-[26px] border border-stone-200 bg-white p-5" onSubmit={handleSearch}>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="space-y-1 text-sm text-stone-600">
+              Search
+              <input className="form-control w-full rounded-xl border px-3 py-2" maxLength={80} onChange={(event) => setSearchForm((current) => ({ ...current, keyword: event.target.value }))} placeholder="Title or description" value={searchForm.keyword} />
+            </label>
+            <label className="space-y-1 text-sm text-stone-600">
+              Report type
+              <select className="form-control w-full rounded-xl border px-3 py-2" onChange={(event) => setSearchForm((current) => ({ ...current, type: event.target.value }))} value={searchForm.type}>
+                <option value="">All types</option>
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+              </select>
+            </label>
+            <label className="space-y-1 text-sm text-stone-600">
+              Category
+              <input className="form-control w-full rounded-xl border px-3 py-2" maxLength={50} onChange={(event) => setSearchForm((current) => ({ ...current, category: event.target.value }))} placeholder="e.g. Wallet" value={searchForm.category} />
+            </label>
+            <label className="space-y-1 text-sm text-stone-600">
+              Location
+              <input className="form-control w-full rounded-xl border px-3 py-2" maxLength={120} onChange={(event) => setSearchForm((current) => ({ ...current, location: event.target.value }))} placeholder="Building or area" value={searchForm.location} />
+            </label>
+            <label className="space-y-1 text-sm text-stone-600">
+              From date
+              <input className="form-control w-full rounded-xl border px-3 py-2" onChange={(event) => setSearchForm((current) => ({ ...current, dateFrom: event.target.value }))} type="date" value={searchForm.dateFrom} />
+            </label>
+            <label className="space-y-1 text-sm text-stone-600">
+              To date
+              <input className="form-control w-full rounded-xl border px-3 py-2" onChange={(event) => setSearchForm((current) => ({ ...current, dateTo: event.target.value }))} type="date" value={searchForm.dateTo} />
+            </label>
+            <label className="space-y-1 text-sm text-stone-600">
+              Status
+              <select className="form-control w-full rounded-xl border px-3 py-2" onChange={(event) => setSearchForm((current) => ({ ...current, status: event.target.value }))} value={searchForm.status}>
+                <option value="">All statuses</option>
+                <option value="open">Open</option>
+                <option value="claimed">Claimed</option>
+                <option value="closed">Closed</option>
+              </select>
+            </label>
+            <div className="flex items-end gap-3">
+              <Button className="flex-1 justify-center" type="submit">Search reports</Button>
+              <Button onClick={resetSearch} type="button" variant="secondary">Reset</Button>
+            </div>
+          </div>
+          {filterError ? <p className="mt-3 text-sm text-rose-700" role="alert">{filterError}</p> : null}
+        </form>
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {loading ? Array.from({ length: 6 }, (_, index) => <SkeletonCard key={index} />) : null}
           {!loading && itemsError ? (
@@ -231,8 +305,8 @@ function Home() {
           ) : null}
           {!loading && !itemsError && items.length === 0 ? (
             <div className="surface-card rounded-[26px] border p-7 md:col-span-2 xl:col-span-3">
-              <p className="font-semibold text-stone-900">No reports yet</p>
-              <p className="mt-2 text-sm text-stone-600">Be the first to post an item and help someone find their way home.</p>
+              <p className="font-semibold text-stone-900">{hasActiveFilters ? "No reports match these filters" : "No reports yet"}</p>
+              <p className="mt-2 text-sm text-stone-600">{hasActiveFilters ? "Try changing the search terms or date range." : "Be the first to post an item and help someone find their way home."}</p>
               <Link className="mt-4 inline-flex text-sm font-semibold text-emerald-900 underline underline-offset-4" to="/report-item">Report an item</Link>
             </div>
           ) : null}

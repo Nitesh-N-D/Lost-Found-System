@@ -40,8 +40,8 @@ Design note: match scores are heuristic suggestions, not proof of ownership. Use
 
 ## P3 — Better reporting and search
 
-- [ ] Advanced filters for category, date range, status, and location.
-- [ ] Duplicate listing warnings before submission.
+- [x] Advanced filters for category, date range, status, and location.
+- [x] Duplicate listing warnings before submission.
 - [ ] Optional multiple-image upload with clear privacy guidance.
 - [ ] Configurable report expiry/archive flow that preserves audit history.
 - [ ] Optional approximate campus map once location quality and consent are established.
@@ -77,4 +77,5 @@ The first delivery adds rule-based matching, persistent match notifications, not
 - Added opt-in helpful/not-a-match feedback for suggestions, scoped to the reporter and only accepted for a currently suggested match; saved feedback is returned with the match list and removed when either report is deleted.
 - Added recovery progress for approved claims, including handoff arranged/recovered/disputed states, private participant notes, and an audit history. Full dispute escalation and notification to admins remain future work.
 - Added a profile setting to opt out of in-app match alerts while keeping ranked suggestions available on the user's reports; email alerts remain unconfigured.
+- Added a best-effort duplicate warning before publishing and public search filters for keyword, report type, category, location, status, and date range.
 - Remaining verification gate: run the two-account harness against an isolated staging deployment with dedicated test accounts before treating live end-to-end matching as verified.

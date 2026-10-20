@@ -6,8 +6,8 @@ const MatchFeedback = require("../models/MatchFeedback");
 const cloudinary = require("../config/cloudinary");
 const AppError = require("../utils/AppError");
 const matchingService = require("./matchingService");
+const { buildItemFilters } = require("../utils/itemFilters");
 
-const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const uploadItemImage = async (fileBuffer) =>
   new Promise((resolve, reject) => {
@@ -77,31 +77,8 @@ const createItem = async (payload, userId, file) => {
 };
 
 const getItems = async (query) => {
-  const {
-    keyword,
-    type,
-    category,
-    location,
-    status,
-    page = 1,
-    limit = 8,
-  } = query;
-
-  const filters = {};
-
-  if (keyword) {
-    const safeKeyword = escapeRegex(String(keyword).slice(0, 80));
-    filters.$or = [
-      { title: { $regex: safeKeyword, $options: "i" } },
-      { description: { $regex: safeKeyword, $options: "i" } },
-      { category: { $regex: safeKeyword, $options: "i" } },
-    ];
-  }
-  if (type) filters.type = type;
-  if (category) filters.category = { $regex: escapeRegex(String(category).slice(0, 50)), $options: "i" };
-  if (location) filters.location = { $regex: escapeRegex(String(location).slice(0, 120)), $options: "i" };
-  if (status) filters.status = status;
-
+  const { page = 1, limit = 8 } = query;
+  const filters = buildItemFilters(query);
   const skip = (Number(page) - 1) * Number(limit);
 
   const [items, total] = await Promise.all([
