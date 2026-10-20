@@ -59,8 +59,6 @@ function Home() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setItemsError(false);
 
     const params = Object.fromEntries(Object.entries(appliedFilters).filter(([, value]) => value !== ""));
     itemService
@@ -90,11 +88,15 @@ function Home() {
       return;
     }
     setFilterError("");
+    setLoading(true);
+    setItemsError(false);
     setAppliedFilters({ ...searchForm });
   };
 
   const resetSearch = () => {
     setSearchForm(emptyFilters);
+    setLoading(true);
+    setItemsError(false);
     setAppliedFilters(emptyFilters);
     setFilterError("");
   };
