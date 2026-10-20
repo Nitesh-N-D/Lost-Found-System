@@ -10,7 +10,8 @@ const populateClaim = (query) =>
       path: "item",
       populate: { path: "reportedBy", select: "name" },
     })
-    .populate("claimant", "name");
+    .populate("claimant", "name")
+    .populate("recoveryHistory.changedBy", "name");
 
 const createClaim = async (itemId, userId, message) => {
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
