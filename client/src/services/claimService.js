@@ -5,4 +5,5 @@ export const claimService = {
   getMine: () => unwrap(api.get("/claims/my-claims")),
   getReceived: () => unwrap(api.get("/claims/received")),
   updateStatus: (claimId, payload) => unwrap(api.put(`/claims/${claimId}`, payload)),
+  updateRecoveryStatus: (claimId, payload) => unwrap(api.patch(`/claims/${claimId}/recovery`, payload)),
 };

@@ -33,7 +33,7 @@ Design note: match scores are heuristic suggestions, not proof of ownership. Use
 ## P2 — Safe and transparent recovery
 
 - [ ] Add structured claim evidence (private identifying details, optional receipt/serial details).
-- [ ] Track handoff/recovery explicitly instead of treating claim approval as confirmed return.
+- [x] Track handoff/recovery explicitly instead of treating claim approval as confirmed return.
 - [ ] Add dispute escalation and audit history for claim status changes.
 - [ ] Ensure a claim is approved only by the listing owner/admin policy and avoid concurrent double-approval.
 - [ ] Improve chat abuse reporting, block/mute controls, and contact-detail privacy.
@@ -75,4 +75,5 @@ The first delivery adds rule-based matching, persistent match notifications, not
 - Added an opt-in two-account API test harness that verifies reciprocal match results and persisted notifications and attempts to clean up its own test artifacts. It requires dedicated test accounts; it is not executed against production automatically.
 - Added authenticated notification dismissal, restricted to the signed-in user's own notification.
 - Added opt-in helpful/not-a-match feedback for suggestions, scoped to the reporter and only accepted for a currently suggested match; saved feedback is returned with the match list and removed when either report is deleted.
+- Added recovery progress for approved claims, including handoff arranged/recovered/disputed states, private participant notes, and an audit history. Full dispute escalation and notification to admins remain future work.
 - Remaining verification gate: run the two-account harness against an isolated staging deployment with dedicated test accounts before treating live end-to-end matching as verified.

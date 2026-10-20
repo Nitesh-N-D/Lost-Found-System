@@ -5,6 +5,7 @@ import { claimService } from "../../services/claimService";
 import EmptyState from "../../components/common/EmptyState";
 import StatusBadge from "../../components/common/StatusBadge";
 import Button from "../../components/common/Button";
+import RecoveryTracker from "../../components/claims/RecoveryTracker";
 
 function MyClaims() {
   const [claims, setClaims] = useState([]);
@@ -18,6 +19,18 @@ function MyClaims() {
       .catch((error) => { setLoadError(true); toast.error(error.message); })
       .finally(() => setLoading(false));
   }, []);
+
+  const updateRecovery = async (claimId, payload) => {
+    try {
+      const updated = await claimService.updateRecoveryStatus(claimId, payload);
+      setClaims((current) => current.map((claim) => claim._id === claimId ? updated : claim));
+      toast.success("Recovery progress updated.");
+      return updated;
+    } catch (error) {
+      toast.error(error.message || "Recovery progress could not be updated.");
+      return null;
+    }
+  };
 
   if (loading) return <p className="text-sm text-stone-500">Loading your claims...</p>;
   if (loadError) return <p className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-800">Your claims could not be loaded. Refresh the page to try again.</p>;
@@ -43,6 +56,7 @@ function MyClaims() {
               </Link>
             </div>
           </div>
+          {claim.status === "approved" ? <RecoveryTracker claim={claim} onSave={updateRecovery} /> : null}
         </div>
       ))}
     </div>

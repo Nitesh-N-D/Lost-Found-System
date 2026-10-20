@@ -5,6 +5,7 @@ import { claimService } from "../../services/claimService";
 import StatusBadge from "../../components/common/StatusBadge";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
+import RecoveryTracker from "../../components/claims/RecoveryTracker";
 
 function ReceivedClaims() {
   const [claims, setClaims] = useState([]);
@@ -39,6 +40,18 @@ function ReceivedClaims() {
       active = false;
     };
   }, []);
+
+  const updateRecovery = async (claimId, payload) => {
+    try {
+      const updated = await claimService.updateRecoveryStatus(claimId, payload);
+      setClaims((current) => current.map((claim) => claim._id === claimId ? updated : claim));
+      toast.success("Recovery progress updated.");
+      return updated;
+    } catch (error) {
+      toast.error(error.message || "Recovery progress could not be updated.");
+      return null;
+    }
+  };
 
   const updateStatus = async () => {
     if (!selection) return;
@@ -83,6 +96,7 @@ function ReceivedClaims() {
               ) : null}
             </div>
           </div>
+          {claim.status === "approved" ? <RecoveryTracker claim={claim} onSave={updateRecovery} /> : null}
         </div>
       ))}
 
