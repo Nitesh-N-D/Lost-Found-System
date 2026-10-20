@@ -60,6 +60,8 @@ const itemQueryValidator = [
   query("keyword").optional().isString().isLength({ max: 80 }).withMessage("Search terms cannot exceed 80 characters"),
   query("category").optional().isString().isLength({ max: 50 }).withMessage("Category filter is too long"),
   query("location").optional().isString().isLength({ max: 120 }).withMessage("Location filter is too long"),
+  query("dateFrom").optional().isISO8601().withMessage("Start date must be a valid date"),
+  query("dateTo").optional().isISO8601().withMessage("End date must be a valid date"),
 ];
 
 module.exports = {
